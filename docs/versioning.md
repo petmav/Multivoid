@@ -22,6 +22,10 @@ Build 286 added the `CheatRequest` and `CheatResult` kinds (a player's cheat req
 [players.md](players.md)), so it is the first build whose F1 menu offers a host's players the cheat tools; a peer on 285 cannot
 join one on 286.
 
+Build 287 added the `AtvPassengerRequest`, `AtvPassengerAnswer` and `AtvPassengerTable` kinds (a player boarding or leaving one of an
+ATV's three passenger seats, the host's verdict, and the host's table of who sits where, [vehicles.md](vehicles.md)), so a peer on
+286 cannot join one on 287.
+
 An unofficial build -- any `main.dll` without its release signature -- shows `(unofficial build)`
 after the version. A host refuses a player on a build of the other kind -- an unofficial build on an
 official host (MV-H30), the official build on a modified host (MV-H31) -- unless it allows other

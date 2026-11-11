@@ -61,6 +61,17 @@ and slaves the body's pelvis velocity to the streamed ragdoll pose so the flop t
 the puppet stays attached as the anchor for the nameplate and the recovery hand-off
 (`coop/player/remote_player_ragdoll`).
 
+### Riding an ATV
+
+An ATV has the driver's seat and three passenger seats on its rear deck, so a full session of four rides together. Pressing the use
+key at an ATV another player is driving boards the first free passenger seat, with empty hands, as the driver's seat asks; pressing it
+again, or the jump key, leaves, and the player is put on the ground beside the ATV. A rider keeps its own mouse-look and cannot walk
+or push the rig; every machine shows it sitting on the deck of its own copy of the ATV, riding with it. A driver getting out does not
+put the passengers out. A rider also leaves when the ATV is destroyed, when it dies or is knocked down, and when it is teleported
+(the cheat panels' teleports and Unstuck included). The seats and the host's table of them are on the vehicles page
+([vehicles.md](vehicles.md)); the rider's body is the local player's own, so its pose stream is unchanged and the movement ledger
+reads the ATV's speeds as it always did.
+
 ### What the player holds and toggles
 
 The items in a player's two hands are player state, not world entities: the game spawns each
@@ -336,6 +347,7 @@ is mirrored by the balance lane; an event is broadcast by the event watch.
 | sleep | each peer sleeps natively; each peer reports its rest state, the host relays it and its own sleeping flag | |
 | inventory | that peer; the host stores it | never on the wire as gameplay |
 | roster, kick, ban | the host | rows asserted as state; a ban by id and address at the identity proof |
+| a passenger seat of an ATV | the host | a judged request, the table sent to every client ([vehicles.md](vehicles.md)) |
 
 ## Wire messages
 
@@ -351,6 +363,7 @@ is mirrored by the balance lane; an event is broadcast by the event watch.
 | `PlayerInventoryBlob` | both | the per-player profile (the player's save record, vitals, standing spot), pre-world |
 | `TeleportClient` | host to one peer | a placement; the administration action, not the join |
 | `CheatRequest`, `CheatResult` | a client to the host; the host to that client | one cheat a player asks for (spawn props, change the points, fire an event) and what the host did with it |
+| `AtvPassengerRequest`, `AtvPassengerAnswer`, `AtvPassengerTable` | a client to the host; the host to that client; the host to every client | boarding or leaving an ATV's passenger seat, the host's verdict, and who sits in each of an ATV's three seats ([vehicles.md](vehicles.md)) |
 
 ## Late join
 
@@ -379,6 +392,7 @@ dead peer through the ragdoll bit of its next pose.
 | Concept | Files |
 |---|---|
 | the remote player and its engine actor | `coop/player/remote_player`, `coop/player/remote_player_ragdoll`, `ue_wrap/actors/puppet` |
+| a puppet on a vehicle seat | `coop/player/remote_player` (`SetSeated`), `coop/interactables/atv_passenger` (the seat, after the puppet drive) |
 | the per-slot puppet lifecycle and drive | `coop/player/puppet_drive`, `coop/player/puppet_body_yaw`, `coop/player/puppet_footsteps`, `coop/player/puppet_carry_drive` |
 | the local player's outbound streams | `coop/player/local_streams`, `coop/player/movement_ledger` |
 | identity and the roster | `coop/player/players_registry`, `coop/player/roster_ledger`, `coop/player/roster`, `coop/player/nickname_arbiter` |

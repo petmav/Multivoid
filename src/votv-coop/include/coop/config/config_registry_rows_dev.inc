@@ -195,6 +195,12 @@ CFG_ENUM(cheat_drill, "cheat_drill", "dev", "off", "off|on", "VOTVCOOP_CHEAT_DRI
     "requests are all refused and move nothing; with it on the client's points, crowbars and event run on the host and "
     "mirror here, a story event and an unlisted prop are refused; reset, the next request is refused again. Each peer first "
     "opens the F1 panes it is offered. Lines tagged [CHEAT-DRILL]; the host's PASS or FAIL line is the verdict.")
+CFG_ENUM(atv_passenger_drill, "atv_passenger_drill", "dev", "off", "off|on", "VOTVCOOP_ATV_PASSENGER_DRILL",
+    "Drill (BOTH peers): the ATV's passenger seats. The host spawns an ATV and drives it; the client boards through the use key "
+    "and must hold passenger seat 0 on both tables, ride the rig through a drive within a tolerance (its puppet on the host "
+    "sitting at the seat), stay seated when the driver leaves, and leave beside the ATV; a second boarding, then the host's "
+    "refusals of a duplicate board (already seated), a board with every seat taken and a board out of reach, each judged by "
+    "the host's counters. Lines tagged [ATVPASS-DRILL]; the host's PASS or FAIL line is the verdict.")
 CFG_ENUM(grants_drill, "grants_drill", "dev", "off", "off|grant|none|hostdeny", "VOTVCOOP_GRANTS_DRILL",
     "The local grants drill: checks this machine's dev grants against an arm's expectation.")
 CFG_ENUM(grants_drill_expect, "grants_drill_expect", "dev", "same", "same|grant|none|hostdeny",

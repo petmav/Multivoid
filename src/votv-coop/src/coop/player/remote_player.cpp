@@ -491,6 +491,7 @@ void RemotePlayer::Destroy() {
     actor_ = nullptr;
     internalIdx_ = -1;
     hasPose_ = false;
+    seated_ = false;
     window_.Close();
     dirty_ = false;
     bodyYaw_.Reset(0.f);    // clears the latch + dt clock; re-seeded at the next Spawn
@@ -585,26 +586,28 @@ void RemotePlayer::ApplyToEngine() {
     // MOVE_Walking), which the AnimBP reads for the foot-IK alpha. Through ue_wrap::puppet, so the
     // CMC offsets stay in the wrapper.
     {
+        // A seated puppet rides a vehicle: the stream's speed is the vehicle's, and the seat is not a fall.
+        const float speed = seated_ ? 0.f : curSpeed_;
         const float yawRad = curYaw_ * 0.01745329252f;  // PI/180
         const ue_wrap::FVector vel{
-            std::cos(yawRad) * curSpeed_,
-            std::sin(yawRad) * curSpeed_,
+            std::cos(yawRad) * speed,
+            std::sin(yawRad) * speed,
             0.f,
         };
-        const bool inAir = (curStateBits_ & coop::net::kStateBitInAir) != 0;
+        const bool inAir = !seated_ && (curStateBits_ & coop::net::kStateBitInAir) != 0;
         Pup::DriveCharacterMovement(actor_, vel, inAir);
         // Run-loudness parity: lib_C::step's volume reads MaxWalkSpeed, which the parked puppet
         // never updates, so the native sprint knob is mirrored from the streamed speed at the
         // stride emitter's run boundary.
         Pup::DriveSprintWalkSpeed(
-            actor_, curSpeed_ > coop::puppet_footsteps::Stride::kRunSpeedCmS);
+            actor_, speed > coop::puppet_footsteps::Stride::kRunSpeedCmS);
         // Footstep audio: the native accumulator lives in the puppet's suppressed BP tick, so the
         // coop layer strides the interpolated displacement and dispatches the game's own
         // lib_C::step (coop/player/puppet_footsteps.h). One StepDue verdict drives both the native
         // step and the skin step effects (two accumulators drift apart into doubled steps). The
         // default step's volume is the skin layer's call: a replace-mode variant mutes it to 0, and
         // lib step still runs its trace, water and friction side effects.
-        if (footsteps_.StepDue(curPos_, curSpeed_, !inAir)) {
+        if (!seated_ && footsteps_.StepDue(curPos_, curSpeed_, !inAir)) {
             ue_wrap::votv_lib::CharacterStep(
                 actor_, coop::skin_effects::DefaultStepVolume(
                             actor_, coop::puppet_footsteps::Stride::kStepVolume));
