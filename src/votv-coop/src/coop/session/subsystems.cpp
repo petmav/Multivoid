@@ -104,6 +104,7 @@
 #include "coop/session/join_beacon.h"
 #include "coop/interactables/grime_sync.h"
 #include "coop/interactables/interactable_sync.h"
+#include "coop/interactables/atv_passenger.h"
 #include "coop/interactables/atv_sync.h"
 #include "coop/interactables/atv_trunk_sync.h"
 #include "coop/interactables/drone_sync.h"
@@ -529,6 +530,7 @@ DisconnectStats DisconnectAll() {
     coop::power_grid::OnDisconnect();
     coop::fuse_tower_ops::OnDisconnect();
     coop::fuse_tower_rows::OnDisconnect();
+    coop::atv_passenger::OnDisconnect();  // a rider still on its seat is let go where it stands, every puppet seat too
     coop::atv_sync::OnDisconnect();
     coop::atv_trunk_sync::OnDisconnect();
     coop::drone_sync::OnDisconnect();
@@ -673,7 +675,7 @@ void TickGameplay(coop::net::Session& session, bool isConnected, bool isHost,
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:power"}; coop::power_panel::Tick(); coop::power_grid::Tick(); }
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:towers"}; coop::fuse_tower_ops::Tick(); coop::fuse_tower_rows::Tick(); }  // the towers: the gates settle, the host's ops and rows, a client's panels  // the panel's and the grid's gates settle; what came before the panel or the generators resolved is taken
     coop::dish_calib_sync::Tick();  // settle the precision lane's three watches
-    { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:atv"}; coop::atv_sync::Tick(); coop::atv_trunk_sync::Tick(); }  // ATV (and its trunk, the host's): the host judges its own seat and grab, a client asks the host; the syncer streams its pose (host+client)
+    { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:atv"}; coop::atv_sync::Tick(); coop::atv_passenger::Tick(); coop::atv_trunk_sync::Tick(); }  // ATV (its passenger seats, and its trunk, the host's): the host judges its own seat and grab, a client asks the host; the syncer streams its pose (host+client)
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:drone"}; coop::drone_sync::Tick(); }  // delivery drone: host streams transform / client suppresses tick + mirrors
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:turbine"}; coop::turbine_sync::Tick(); }  // wind turbines: host ~1 Hz driver-float poll / client deferred-apply retry
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:woodchipper"}; coop::woodchipper_sync::Tick(); }  // woodchippers: the host's intents and its changed chippers, the burn read once a second / the client's held states

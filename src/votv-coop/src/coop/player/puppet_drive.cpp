@@ -3,6 +3,7 @@
 // interpolated stream to it, and retire it when the slot goes away. net_pump
 // owns the loop that calls in here; this file owns what happens per slot.
 
+#include "coop/interactables/atv_passenger.h"
 #include "coop/player/puppet_drive.h"
 
 #include "coop/creatures/wisp_grab_hold.h"
@@ -197,6 +198,10 @@ void DriveTick(coop::net::Session& session, bool worldReadyAnnounced) {
     // for the hold window (the module's own liveness guards release it). Cheap no-op when
     // nothing is held.
     coop::wisp_grab_hold::Tick();
+
+    // The remote passengers of an ATV: each puppet sits at its seat on this machine's copy of the rig, after the pose apply
+    // above (which placed it in the world from the stream) and so the write this frame renders.
+    coop::atv_passenger::TickPuppets();
 
     // Pose-apply diagnostic emit (once/sec). target = the latest pose received for this slot;
     // puppet = its rendered location AFTER this frame's interp Tick; trail = how far the

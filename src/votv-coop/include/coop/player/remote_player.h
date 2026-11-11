@@ -104,6 +104,12 @@ public:
     // The same aim as a rotator (pitch, yaw, no roll), for a caller that wants the angles.
     ue_wrap::FRotator GetSyncedAimRotation() const { return {curPitch_, curYaw_ + curHeadYawDelta_, 0.f}; }
 
+    // The puppet sits on a vehicle seat (coop/interactables/atv_passenger attaches it): its own pose stream still turns the
+    // head and the body, but its position is the seat's, so what the stream says of speed (the vehicle's) is not shown as
+    // legs running in place, a footstep or a fall. Game thread only.
+    void SetSeated(bool seated) { if (seated_ != seated) { seated_ = seated; dirty_ = true; } }
+    bool IsSeated() const { return seated_; }
+
     // The raw engine puppet actor, nullptr before Spawn. Game thread only.
     void* GetActor() const { return actor_; }
 
@@ -266,6 +272,7 @@ private:
     // AdvanceInterp applies its dAlpha to the errors above; SetTargetPose opens it and closes it on
     // a snap.
     coop::LerpWindow window_;
+    bool             seated_ = false;   // on a vehicle seat: no locomotion shown (SetSeated)
     bool             hasPose_ = false;  // first packet snaps; spawn placeholder is fake
     bool             dirty_ = true;     // true while there's an unapplied change to push to the engine
 };
