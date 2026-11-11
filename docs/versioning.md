@@ -9,7 +9,7 @@ runbook for porting to a new game version.
 ## The version pair
 
 The mod is identified by two numbers, the way Paper identifies a Minecraft build: the game
-version it targets and its own build number, displayed as `Multivoid 0.10.0 b285`. There is no
+version it targets and its own build number, displayed as `Multivoid 0.10.0 b286`. There is no
 separate semantic version. The game target is set once in `src/votv-coop/CMakeLists.txt` and
 generated into a header; the build number is the wire protocol's version in `coop/net/protocol.h`,
 bumped by every change to any wire format and by every release. The pair is stamped into the
@@ -17,6 +17,10 @@ DLL's version resource, printed in the boot banner, and carried in the release z
 deploy and publish scripts refuse on a mismatch between the resource and the tree. The build
 numbers themselves are minted in an append-only ledger in `.github/ci/`, and a tag or a
 release page is a drift detector, never the authority ([release.md](release.md)).
+
+Build 286 added the `CheatRequest` and `CheatResult` kinds (a player's cheat request and the host's answer,
+[players.md](players.md)), so it is the first build whose F1 menu offers a host's players the cheat tools; a peer on 285 cannot
+join one on 286.
 
 An unofficial build -- any `main.dll` without its release signature -- shows `(unofficial build)`
 after the version. A host refuses a player on a build of the other kind -- an unofficial build on an
