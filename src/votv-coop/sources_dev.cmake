@@ -79,6 +79,7 @@ set(VOTVCOOP_DEV_SOURCES
     src/coop/dev/kerfus_throw_drill.cpp
     src/coop/dev/drill_place.cpp
     src/coop/dev/desk_crossing_drill.cpp
+    src/coop/dev/desk_panel_drill.cpp
     src/coop/dev/desk_ping_drill.cpp
     src/coop/dev/desk_ping_drill_observer.cpp
     src/coop/dev/command_drill.cpp
@@ -273,6 +274,8 @@ set(VOTVCOOP_DEV_SOURCES
     src/coop/dev/keypad_drill.cpp
     src/coop/dev/lookat_aim_drill.cpp
     src/coop/dev/fireext_drill.cpp
+    src/coop/dev/oven_progress_drill.cpp
+    src/coop/dev/pried_drill.cpp
     src/coop/dev/pry_drill.cpp
     src/coop/dev/recycled_slot_drill.cpp
     src/coop/dev/rehost_rejoin.cpp
@@ -298,6 +301,7 @@ set(VOTVCOOP_DEV_SOURCES
     src/coop/dev/pile_defer_drill_host.cpp
     src/coop/dev/client_model_probe.cpp
     src/coop/dev/atv_eject_drill.cpp
+    src/coop/dev/atv_part_drill.cpp
     src/coop/dev/atv_probe.cpp
     src/coop/dev/atv_seat.cpp
     src/coop/dev/atv_tire_probe.cpp

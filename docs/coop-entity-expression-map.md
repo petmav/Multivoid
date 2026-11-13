@@ -447,6 +447,10 @@ registry recycled that id. `[V]`
   judged and answered with `AtvPassengerAnswer`, and the host's own player is judged by the same table. The table reaches every
   client as `AtvPassengerTable` (a joiner at its replay), and each machine seats a rider's body, or its puppet, on its own copy
   of the ATV (`coop/interactables/atv_passenger`). A driver leaving ejects nobody. `[V]`
+- **Authority: the parts are the host's.** Which tyres are on, whether the spare is and whether a battery is fitted change on
+  the host's copy alone. A client's unbolt, fit, stow, insert or spare take is cancelled at the script gate and asked with
+  `AtvPartIntent`; the host judges it and runs it, the part's birth crosses as the host's, and presence follows in `AtvState`
+  (`coop/interactables/atv_part_intent`). `[?]`
 - **Expression: the syncer's stamped stream.** The syncer streams `AtvState`; a client's reaches the host alone,
   which applies only its syncer's blocks and re-sends each, marked and stamped with the seat and the syncer, to
   every other client. The host's own copy streams while it syncs. Every machine follows the stamp, yielding to

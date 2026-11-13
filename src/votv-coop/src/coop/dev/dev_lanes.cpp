@@ -24,6 +24,7 @@
 #include "coop/dev/damage_probe.h"  // [dev] every player damage verb call, and by whom
 #include "coop/dev/delivery_census_probe.h"  // COUNT the delivery-path actors
 #include "coop/dev/desk_diag.h"  // [dev] desk/console divergence census
+#include "coop/dev/desk_panel_drill.h"  // [dev] the desk back panels unbolted, taken off and put back, judged on both peers
 #include "coop/dev/door_drill.h"  // [dev] whether a remote player counts in a door's own sensor
 #include "coop/dev/drive_selftest.h"  // [dev] rack-lane e2e circles
 #include "coop/dev/rack_birth_drill.h"  // [dev] a rack born holding rows reaches the client, which sends no op
@@ -33,6 +34,7 @@
 #include "coop/dev/dronesack_drill.h"  // [dev] a crate dropped onto the drone sack, both peers told
 #include "coop/dev/atv_health_drill.h"  // [dev] the ATV lane's table judged on the ATV the host spawns (trap: the world's)
 #include "coop/dev/atv_eject_drill.h"  // [dev] a wheel knocked off an ATV is the host's to express, never a client's
+#include "coop/dev/atv_part_drill.h"  // [dev] a client's unbolt and fit of an ATV's wheel or battery, judged on both peers
 #include "coop/dev/atv_spawn_drill.h"  // [dev] a runtime ATV reaches each client once
 #include "coop/dev/throw_drill.h"  // [dev] a thrown container keeps its contents on the host
 #include "coop/dev/fall_drill.h"  // [dev] a falling host birth lands on the client where it lands on the host
@@ -139,6 +141,8 @@
 #include "coop/dev/host_settle_drill.h"  // [dev] a join in the host's start-up waits for it
 #include "coop/dev/impact_damage_probe.h"  // [dev] what impactDamage receives, logged per call
 #include "coop/dev/prop_birth_key_probe.h"  // the place/birth seam's key timing and drain exits
+#include "coop/dev/oven_progress_drill.h"  // [dev] the oven's screws and lid raised on one screen, read on the other
+#include "coop/dev/pried_drill.h"  // [dev] a plank, a radiator and a closed dynamite box pried, judged on both peers
 #include "coop/dev/pry_drill.h"  // [dev] a stuck pryable pried off its wall, watched on both peers
 #include "coop/dev/recycled_slot_drill.h"  // [dev] a recycled object slot, staged on the local pawn
 #include "coop/dev/rng_roll_census.h"  // the dev roll census
@@ -244,6 +248,7 @@ void EndSession() {
     coop::dev::atv_spawn_drill::OnDisconnect();  // [dev] the spawn belongs to one session
     coop::dev::atv_health_drill::OnDisconnect();  // [dev] the phases and the walk belong to one session
     coop::dev::atv_eject_drill::OnDisconnect();  // [dev] the phases and the walk belong to one session
+    coop::dev::atv_part_drill::OnDisconnect();  // [dev] back to the first step, the spawned ATV forgotten
     coop::dev::drill_chat::Reset();  // [dev] the queued lines and the talk budget belong to one session
     coop::dev::fall_drill::OnDisconnect();  // [dev] the drop belongs to one session
     coop::dev::remover_drill::OnDisconnect();  // [dev] the props and the toolgun belong to one session
@@ -305,6 +310,9 @@ void EndSession() {
     coop::dev::lookat_aim_drill::OnDisconnect();  // [dev] the held target, which the next world does not have
     coop::dev::fireext_drill::OnDisconnect();  // [dev] back to the first step, the watch emptied
     coop::dev::pry_drill::OnDisconnect();  // [dev] back to the first step, the watch emptied
+    coop::dev::pried_drill::OnDisconnect();  // [dev] back to the first step
+    coop::dev::desk_panel_drill::OnDisconnect();  // [dev] back to the first step
+    coop::dev::oven_progress_drill::OnDisconnect();  // [dev] back to the first step
     coop::dev::pi3_drill::OnDisconnect();  // [dev] a spawner mid-arm is abandoned, a still peer lets go
     coop::dev::native_spawn_probe::OnDisconnect();  // [dev] the per-source counts are said and the records cleared
     coop::dev::floppy_selftest::EmitVerdict();  // [dev] which disc episodes fired, and which never did
@@ -365,6 +373,9 @@ void TickDrills(coop::net::Session& session) {
     coop::dev::keypad_drill::Tick(&session);  // [dev] the keypad drill's legs (a single bool read when off)
     coop::dev::fireext_drill::Tick(&session);  // [dev] the fire extinguisher drill (a single bool read when off)
     coop::dev::pry_drill::Tick(&session);  // [dev] the pry drill (a single read when off)
+    coop::dev::pried_drill::Tick(&session);  // [dev] the pried-prop drill (a single read when off)
+    coop::dev::desk_panel_drill::Tick(&session);  // [dev] the desk back-panel drill (a single read when off)
+    coop::dev::oven_progress_drill::Tick(&session);  // [dev] the oven screen drill (a single read when off)
     coop::dev::recycled_slot_drill::Tick();  // [dev] the recycled-slot drill (a single read when off)
     coop::dev::spawn_match_probe::Tick();  // [dev] periodic fuzzy-match totals (a single bool read when off)
     coop::dev::container_join_drill::Tick(&session);  // [dev] the container join drill (a single bool read when off)
@@ -385,6 +396,7 @@ void TickDrills(coop::net::Session& session) {
     coop::dev::atv_spawn_drill::Tick(&session);  // [dev] the ATV spawn drill (latched string compares when off)
     coop::dev::atv_health_drill::Tick(&session);  // [dev] the ATV health drill (a latched enum read when off)
     coop::dev::atv_eject_drill::Tick(&session);  // [dev] the ATV eject drill (a latched enum read when off)
+    coop::dev::atv_part_drill::Tick(&session);  // [dev] the ATV part drill (a latched enum read when off)
     coop::dev::fall_drill::Tick(&session);  // [dev] the fall drill (a latched bool read when off)
     coop::dev::remover_drill::Tick(&session);  // [dev] the remover drill (a latched enum read when off)
     coop::dev::prop_act_drill::Tick(&session);  // [dev] the act drill (a latched phase read when off)

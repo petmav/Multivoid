@@ -91,6 +91,7 @@ set(VOTVCOOP_SOURCES_UE_WRAP_2
     src/ue_wrap/devices/lightswitch.cpp
     src/ue_wrap/devices/garage.cpp
     src/ue_wrap/devices/appliance.cpp
+    src/ue_wrap/devices/oven_screen.cpp
     src/ue_wrap/devices/coffee.cpp
     src/ue_wrap/devices/cremator.cpp
     src/ue_wrap/devices/power_control.cpp
@@ -99,6 +100,7 @@ set(VOTVCOOP_SOURCES_UE_WRAP_2
     src/ue_wrap/devices/atv.cpp
     src/ue_wrap/devices/atv_passenger.cpp
     src/ue_wrap/devices/atv_condition.cpp
+    src/ue_wrap/devices/atv_parts.cpp
     src/ue_wrap/devices/drone.cpp
     src/ue_wrap/devices/drone_console.cpp
     src/ue_wrap/devices/windturbine.cpp
@@ -123,6 +125,7 @@ set(VOTVCOOP_SOURCES_UE_WRAP_2
     src/ue_wrap/devices/laptop_widget.cpp
     src/ue_wrap/desk/desk_audio.cpp
     src/ue_wrap/desk/phys_mods.cpp
+    src/ue_wrap/desk/desk_panels.cpp
     src/ue_wrap/desk/desk_press.cpp
     src/ue_wrap/desk/desk_detector.cpp
     src/ue_wrap/desk/desk_ping.cpp

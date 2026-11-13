@@ -14,6 +14,8 @@
 #include "coop/interactables/desk_ping_sync.h"
 #include "coop/interactables/deck_play_sync.h"  // deck playback lane
 #include "coop/interactables/physmods_sync.h"  // desk physical-modules lane
+#include "coop/interactables/desk_panel_sync.h"  // desk back panels lane
+#include "coop/interactables/oven_progress_sync.h"  // the oven's screws and lid
 #include "coop/items/order_queue_sync.h"  // the delivery order queue, the host's, mirrored
 #include "coop/interactables/drive_payload_sync.h"  // a drive's row, the host's
 #include "coop/interactables/drive_sync.h"  // the drive slots
@@ -97,6 +99,7 @@
 #include "coop/world/plant_sync.h"
 #include "coop/props/prop_tool_flags.h"
 #include "coop/props/prop_stick_sync.h"  // wall-attachable stick mirror (camera-on-wall)
+#include "coop/props/prop_pry_sync.h"  // a crowbar's pry of a prop with no wall-attach component
 #include "coop/dev/dev_lanes.h"  // the developer drills, probes and selftests, wired in one place
 #include "coop/dev/perf_probe.h"
 #include "coop/save/join_window_baseline.h"  // the connect edge's removes and position corrections
@@ -104,6 +107,7 @@
 #include "coop/session/join_beacon.h"
 #include "coop/interactables/grime_sync.h"
 #include "coop/interactables/interactable_sync.h"
+#include "coop/interactables/atv_part_intent.h"  // a client's work on an ATV's wheels, spare and battery
 #include "coop/interactables/atv_passenger.h"
 #include "coop/interactables/atv_sync.h"
 #include "coop/interactables/atv_trunk_sync.h"
@@ -264,6 +268,7 @@ void Install(coop::net::Session& session) {
     coop::fuse_tower_rows::Install(&session);  // the towers roll and judge on the host: their rows to every peer
     coop::fuse_tower_ops::Install(&session);  // a client's presses and fuse claims, and its refused rolls
     coop::atv_sync::Install(&session);  // ATV body pose (the syncer the host assigned streams a keyed pose)
+    coop::atv_part_intent::Install(&session);  // a client's wheel, spare and battery work: the four ATV_C watches
     coop::atv_trunk_sync::Install(&session);  // an ATV's trunk: the host's inventory component, mirrored on the clients
     coop::drone_sync::Install(&session);  // delivery drone body pose (host-authoritative singleton)
     coop::order_sync::Install(&session);  // delivery-drone economy: client->host shop-order forward
@@ -322,6 +327,8 @@ void Install(coop::net::Session& session) {
     coop::desk_snd_fx::Install(&session);  // desk audio-effect mirror (Func-patch audio seam)
     coop::deck_play_sync::Install(&session);  // deck playback edge mirror (audio-seam Activate/Deactivate + gen guard)
     coop::physmods_sync::Install(&session);  // physMods slot ops at the desk's verbs + host-canonical array
+    coop::desk_panel_sync::Install(&session);  // the desk's back panels: edits to the host, host-canonical masks
+    coop::oven_progress_sync::Install(&session);  // the oven's screws and lid: each screen's bits, merged
     coop::drive_sync::Install(&session);  // the drive chain's slot lane (verb dirty-marks + the slot sweep; the slot and rack verb watches)
     coop::drive_payload_sync::Install(&session);  // a drive's row: the host authors it at prop_drive_C::upd
     coop::drive_rack_sync::Install(&session);  // rack storage lane (marks forwarded from drive_sync)
@@ -372,6 +379,7 @@ void Install(coop::net::Session& session) {
     coop::prop_hold_claim::Install(&session);  // one hold per keyed prop: the host keeps the first and refuses a second
     coop::prop_tool_flags::Install(&session);  // the toolgun's prop-properties tool: tool_propProps_C's init watched
     coop::prop_stick_sync::Install(&session);  // wall-attachable stick mirror (camera-on-wall -- commit observer -> PropStickState; receiver replays forceStick)
+    coop::prop_pry_sync::Install(&session);  // a pried plank, radiator or dynamite box: the crowbarOpen watch
     coop::sleep_sync::Install(&session);  // who rests: each peer's rest state (client -> host -> clients) and the host's sleeping flag
     coop::sleep_rest::Install(&session);  // a client's rest at the native rate: its own sleep watch and the factor on its body and effects
     coop::wisp_attack_sync::Install(&session);  // Killer Wisp coop -- AddPlayerDamage PRE-cancel (host neutralize) + host detect/relay
@@ -517,6 +525,7 @@ DisconnectStats DisconnectAll() {
     coop::plant_sync::OnDisconnect();
     coop::prop_tool_flags::OnDisconnect();  // drop the pending press and the counters
     coop::prop_stick_sync::OnDisconnect();  // drop commit-pending stick records
+    coop::prop_pry_sync::OnDisconnect();  // the session's pry counters
     coop::sleepingbag_sync::OnDisconnect();
     coop::item_activate::OnDisconnect();
     coop::weather_sync::OnDisconnect();
@@ -531,6 +540,7 @@ DisconnectStats DisconnectAll() {
     coop::fuse_tower_ops::OnDisconnect();
     coop::fuse_tower_rows::OnDisconnect();
     coop::atv_passenger::OnDisconnect();  // a rider still on its seat is let go where it stands, every puppet seat too
+    coop::atv_part_intent::OnDisconnect();  // the session's part counters, the senders' budgets
     coop::atv_sync::OnDisconnect();
     coop::atv_trunk_sync::OnDisconnect();
     coop::drone_sync::OnDisconnect();
@@ -593,6 +603,8 @@ DisconnectStats DisconnectAll() {
     coop::desk_snd_fx::OnDisconnect();
     coop::deck_play_sync::OnDisconnect();  // gen counters + ring + self-test latch
     coop::physmods_sync::OnDisconnect();  // verb snapshots + parked canonical + deny records
+    coop::desk_panel_sync::OnDisconnect();  // the known masks + parked canonical
+    coop::oven_progress_sync::OnDisconnect();  // the known ovens + parked masks
     coop::drive_sync::OnDisconnect();  // slot baselines + latch/dirty state
     coop::drive_payload_sync::OnDisconnect();  // held and sent rows, notes
     coop::drive_rack_sync::OnDisconnect();  // rack baselines/shadow + deny/taken rings
@@ -724,6 +736,8 @@ void TickGameplay(coop::net::Session& session, bool isConnected, bool isHost,
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:desk_snd"}; coop::desk_snd_fx::Tick(); }  // audio-seam ring flush + lazy hook install + pending loop retry
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:deck_play"}; coop::deck_play_sync::Tick(); }  // deck playback ring flush + lazy Deactivate/fin seam install + gen author
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:physmods"}; coop::physmods_sync::Tick(); }  // parked-canonical apply at desk resolve
+    { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:desk_panels"}; coop::desk_panel_sync::Tick(); }  // parked-canonical apply + the panels' edits
+    { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:oven_progress"}; coop::oven_progress_sync::Tick(); }  // the oven screens' steps, 4 Hz
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:drive"}; coop::drive_sync::Tick(); coop::drive_payload_sync::Tick(); }  // the slot lane's drain and sweep; the rows' enrolments
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:drive_rack"}; coop::drive_rack_sync::Tick(); }  // rack barrier drain + 1 Hz sweep
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:email"}; coop::email_sync::Tick(); }  // email shadow poll (1 Hz; appends -> chunked broadcast, shrinks -> content-keyed deletes)

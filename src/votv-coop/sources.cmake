@@ -85,6 +85,7 @@ set(VOTVCOOP_SOURCES
     src/coop/dispatch/event_dispatch_prop_drive.cpp
     src/coop/dispatch/event_dispatch_requester_feedback.cpp
     src/coop/dispatch/event_dispatch_cheat.cpp
+    src/coop/dispatch/event_dispatch_atv_part.cpp
     src/coop/dispatch/event_dispatch_kerfur_command.cpp
     src/coop/dispatch/event_dispatch_signal.cpp
     src/coop/dispatch/event_dispatch_state.cpp
@@ -142,6 +143,7 @@ set(VOTVCOOP_SOURCES
     src/coop/interactables/atv_runtime_mirror.cpp
     src/coop/interactables/atv_spawn_park.cpp
     src/coop/interactables/atv_condition_sync.cpp
+    src/coop/interactables/atv_part_intent.cpp
     src/coop/interactables/atv_corrector.cpp
     src/coop/interactables/atv_hit_guard.cpp
     src/coop/interactables/atv_damage_gate.cpp
@@ -278,6 +280,7 @@ set(VOTVCOOP_SOURCES
     src/coop/props/disc_record_ceiling.cpp
     src/coop/props/prop_record_gates.cpp
     src/coop/props/prop_stick_sync.cpp
+    src/coop/props/prop_pry_sync.cpp
     src/coop/props/prop_synth_key.cpp
     src/coop/props/prop_fresh_spawn.cpp
     src/coop/props/wire_class.cpp
@@ -429,6 +432,8 @@ set(VOTVCOOP_SOURCES
     src/coop/interactables/desk_input_sync.cpp
     src/coop/interactables/deck_play_sync.cpp
     src/coop/interactables/physmods_sync.cpp
+    src/coop/interactables/desk_panel_sync.cpp
+    src/coop/interactables/oven_progress_sync.cpp
     src/coop/interactables/drive_payload_sync.cpp
     src/coop/interactables/drive_sync.cpp
     src/coop/interactables/eraser_press_intent.cpp

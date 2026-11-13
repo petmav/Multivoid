@@ -9,7 +9,7 @@ runbook for porting to a new game version.
 ## The version pair
 
 The mod is identified by two numbers, the way Paper identifies a Minecraft build: the game
-version it targets and its own build number, displayed as `Multivoid 0.10.0 b287`. There is no
+version it targets and its own build number, displayed as `Multivoid 0.10.0 b288`. There is no
 separate semantic version. The game target is set once in `src/votv-coop/CMakeLists.txt` and
 generated into a header; the build number is the wire protocol's version in `coop/net/protocol.h`,
 bumped by every change to any wire format and by every release. The pair is stamped into the
@@ -29,6 +29,14 @@ ATV's three passenger seats, the host's verdict, and the host's table of who sit
 Build 287 added the `AtvPassengerRequest`, `AtvPassengerAnswer` and `AtvPassengerTable` kinds (a player boarding or leaving one of an
 ATV's three passenger seats, the host's verdict, and the host's table of who sits where, [vehicles.md](vehicles.md)), so a peer on
 286 cannot join one on 287.
+
+Build 288 added the `PropPryIntent` and `DeskPanelState` kinds and the pry mark on `PropStickState` (a crowbar's pry of a plank, a
+radiator, the security TV or a closed dynamite box, [props.md](props.md); the desk's back panels, [signals.md](signals.md)), so a
+peer on 287 cannot join one on 288.
+
+Build 288 also added the `AtvPartIntent` kind and the battery's charge on `AtvState` (a client's work on an ATV's wheels, spare
+and battery, [vehicles.md](vehicles.md)), and the `OvenProgressState` kind (the screws and the lid of an oven's repair,
+[devices.md](devices.md)).
 
 An unofficial build -- any `main.dll` without its release signature -- shows `(unofficial build)`
 after the version. A host refuses a player on a build of the other kind -- an unofficial build on an

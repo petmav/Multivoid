@@ -364,6 +364,7 @@ is mirrored by the balance lane; an event is broadcast by the event watch.
 | `TeleportClient` | host to one peer | a placement; the administration action, not the join |
 | `CheatRequest`, `CheatResult` | a client to the host; the host to that client | one cheat a player asks for (spawn props, change the points, fire an event) and what the host did with it |
 | `AtvPassengerRequest`, `AtvPassengerAnswer`, `AtvPassengerTable` | a client to the host; the host to that client; the host to every client | boarding or leaving an ATV's passenger seat, the host's verdict, and who sits in each of an ATV's three seats ([vehicles.md](vehicles.md)) |
+| `AtvPartIntent` | a client to the host | one piece of work on an ATV's wheels, spare or battery, which the host judges and runs on its copy ([vehicles.md](vehicles.md)) |
 
 ## Late join
 

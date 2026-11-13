@@ -5,6 +5,7 @@
 #include "ue_wrap/core/cached_obj_ref.h"
 #include "ue_wrap/core/call.h"
 #include "ue_wrap/core/log.h"
+#include "ue_wrap/core/object_index.h"
 #include "ue_wrap/core/reflection.h"
 #include "ue_wrap/core/sdk_profile.h"
 
@@ -61,6 +62,20 @@ bool CallBaseSetPropProps(void* prop, bool isStatic, bool frozen, bool sleeping)
     ParamFrame f(fn);  // `active` stays false: the base body never reads it
     return f.valid() && f.Set<bool>(L"static", isStatic) && f.Set<bool>(L"frozen", frozen) &&
            f.Set<bool>(L"sleeping", sleeping) && Call(prop, f);
+}
+
+bool CallCrowbarOpen(void* prop) {
+    void* fn = prop ? R::FindDispatchFunctionCached(R::ClassOf(prop), L"crowbarOpen") : nullptr;
+    if (!fn) return false;
+    ParamFrame f(fn);  // pryingCrowbar stays null
+    return f.valid() && Call(prop, f);
+}
+
+bool PryReplacesProp(void* prop) {
+    void* cls = prop ? R::ClassOf(prop) : nullptr;
+    void* box = ue_wrap::object_index::ClassByName(L"prop_dynamiteBoxClosed_C");
+    if (!cls || !box) return false;
+    return cls == box || R::IsDescendantOfAny(cls, &box, 1);
 }
 
 bool CallPropThrown(void* prop, void* player) {
