@@ -23,10 +23,12 @@
 #include "ue_wrap/engine/engine.h"
 #include "ue_wrap/engine/engine_mainplayer.h"
 
+#include <algorithm>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>
 #include <string>
+#include <vector>
 
 namespace coop::dev::desk_panel_drill {
 namespace {
@@ -53,8 +55,11 @@ char Who() { return Host() ? 'H' : 'C'; }
 // The peer that runs the steps: the client in the client arm, the host otherwise (the race's unbolt).
 bool LocalActs() { return (ArmOf() == Arm::Client) != Host(); }
 
-constexpr int      kPanel       = 0;     // top left; panel 2 is the one the desk never lets go
-constexpr uint8_t  kBit         = 1u << kPanel;
+// The drill's panel, picked from the desk as the save left it: the first panel still on, a bolted one
+// before an unbolted one, never panel 2, which the desk never lets go.
+int      g_panel  = 0;
+uint8_t  g_bit    = 1;
+bool     g_picked = false;
 constexpr uint64_t kDwellMs     = 2500;  // a step's state must still stand this long after it
 constexpr uint64_t kStepBoundMs = 12000;
 constexpr uint64_t kRaceLeadMs  = 600;   // from the go line to the press
@@ -70,26 +75,45 @@ struct State {
     bool operator==(const State& o) const { return on == o.on && unscrewed == o.unscrewed && props == o.props; }
 };
 
-int PanelProps() {
-    void* cls = DP::ClassForPanel(kPanel);
-    if (!cls) return -1;
-    int n = 0;
-    for (void* a : R::FindObjectsByClass(R::ToString(R::NameOf(cls)).c_str()))
-        if (a && R::IsLive(a) && R::ClassOf(a) == cls && !R::NameStartsWith(R::NameOf(a), L"Default__")) ++n;
-    return n;
+void PickPanel(const DP::Masks& m) {
+    for (int pass = 0; pass < 2 && !g_picked; ++pass)
+        for (int i = 0; i < DP::kPanels && !g_picked; ++i) {
+            const uint8_t bit = static_cast<uint8_t>(1u << i);
+            if (i == 2 || !(m.on & bit) || (pass == 0 && (m.unscrewed & bit))) continue;
+            g_panel = i;
+            g_bit = bit;
+            g_picked = true;
+        }
+    if (g_picked)
+        UE_LOGI("[DESK-PANEL-DRILL] [%c] the drill's panel is %d (desk on=0x%X unscrewed=0x%X)",
+                coop::roster::LocalIsHost() ? 'H' : 'C', g_panel, m.on, m.unscrewed);
 }
 
-void* FirstPanelProp() {
-    void* cls = DP::ClassForPanel(kPanel);
-    if (!cls) return nullptr;
+// The live panel props of the drill's place. A save can hold some already.
+std::vector<void*> PanelPropsNow() {
+    std::vector<void*> out;
+    void* cls = DP::ClassForPanel(g_panel);
+    if (!cls) return out;
     for (void* a : R::FindObjectsByClass(R::ToString(R::NameOf(cls)).c_str()))
-        if (a && R::IsLive(a) && R::ClassOf(a) == cls && !R::NameStartsWith(R::NameOf(a), L"Default__")) return a;
+        if (a && R::IsLive(a) && R::ClassOf(a) == cls && !R::NameStartsWith(R::NameOf(a), L"Default__"))
+            out.push_back(a);
+    return out;
+}
+
+int PanelProps() { return DP::ClassForPanel(g_panel) ? static_cast<int>(PanelPropsNow().size()) : -1; }
+
+// The panel prop the last press spawned: the one that was not there before it.
+std::vector<void*> g_beforePress;
+void* PressedPanelProp() {
+    for (void* a : PanelPropsNow())
+        if (std::find(g_beforePress.begin(), g_beforePress.end(), a) == g_beforePress.end()) return a;
     return nullptr;
 }
 
 bool ReadState(State& out) {
     DP::Masks m{};
     if (!DP::EnsureResolved() || !CD::Instance() || !DP::Read(m)) return false;
+    if (!g_picked) PickPanel(m);
     out = State{m.on, m.unscrewed, PanelProps()};
     return true;
 }
@@ -143,7 +167,7 @@ int TakeOffLatch(void* desk) {
 bool Unscrew() {
     void* desk = CD::Instance();
     void* fn = desk ? R::FindDispatchFunctionCached(R::ClassOf(desk), L"unscrewPanel") : nullptr;
-    if (!fn || !SetLookingAt(desk, kPanel)) return false;
+    if (!fn || !SetLookingAt(desk, g_panel)) return false;
     ue_wrap::ParamFrame f(fn);
     const bool ok = f.valid() && ue_wrap::Call(desk, f);
     SetLookingAt(desk, -1);
@@ -155,7 +179,8 @@ bool Press() {
     void* desk = CD::Instance();
     void* player = coop::players::Registry::Get().Local();
     void* fn = desk ? R::FindDispatchFunctionCached(R::ClassOf(desk), L"actionOptionIndex") : nullptr;
-    if (!fn || !player || !SetLookingAt(desk, kPanel)) return false;
+    if (!fn || !player || !SetLookingAt(desk, g_panel)) return false;
+    g_beforePress = PanelPropsNow();
     ue_wrap::ParamFrame f(fn);
     const bool ok = f.valid() && f.Set<void*>(L"player", player) && ue_wrap::Call(desk, f);
     SetLookingAt(desk, -1);
@@ -238,25 +263,28 @@ bool Stands(const State& want, Step next) {
     return false;
 }
 
-State g_base{};  // the fixture: the panel on and bolted
+State g_base{};        // both peers' state before the first step: the drill's panel on
+bool  g_wasBolted = true;  // a panel the save holds unbolted is not bolted or unbolted by the drill
+int   g_raceBaseProps = -1;
 
 void TickActor(coop::net::Session& s) {
     switch (g_step) {
     case Step::WaitJoin: {
         State theirs{};
         if (!JoinOver(s) || !ReadState(g_base) || !TheirState(theirs)) return;
-        if (!(g_base.on & kBit) || (g_base.unscrewed & kBit) || g_base.props != 0 || !(theirs == g_base))
-            return Verdict(false, "fixture: the panel must start on, bolted and with no panel prop on both peers; "
-                           "here on=0x%X unscrewed=0x%X props=%d, there on=0x%X unscrewed=0x%X props=%d", g_base.on,
+        if (!g_picked || !(g_base.on & g_bit) || !(theirs == g_base))
+            return Verdict(false, "fixture: a panel must be on and both peers must start alike; here on=0x%X "
+                           "unscrewed=0x%X props=%d, there on=0x%X unscrewed=0x%X props=%d", g_base.on,
                            g_base.unscrewed, g_base.props, theirs.on, theirs.unscrewed, theirs.props);
+        g_wasBolted = !(g_base.unscrewed & g_bit);
         return Go(Step::Unbolt);
     }
     case Step::Unbolt: {
         if (!g_acted) {
             g_acted = true;
-            if (!Unscrew()) return Verdict(false, "unbolt: the desk's unscrewPanel did not dispatch");
+            if (g_wasBolted && !Unscrew()) return Verdict(false, "unbolt: the desk's unscrewPanel did not dispatch");
         }
-        const State want{g_base.on, g_base.unscrewed | kBit, 0};
+        const State want{g_base.on, g_base.unscrewed | g_bit, g_base.props};
         if (ArmOf() != Arm::Race) { Stands(want, Step::Take); return; }
         if (Stands(want, Step::RaceWait)) DC::Say(kSayGo);
         return;
@@ -265,7 +293,7 @@ void TickActor(coop::net::Session& s) {
         if (!g_acted) {
             g_acted = true;
             if (!Press()) return Verdict(false, "take-off: the desk's actionOptionIndex did not dispatch");
-            void* prop = FirstPanelProp();
+            void* prop = PressedPanelProp();
             if (!prop || !E::TryGetActorLocation(prop, g_lidAt))
                 return Verdict(false, "take-off: the press left no panel prop on the acting peer");
             g_prop.Set(prop);
@@ -273,27 +301,32 @@ void TickActor(coop::net::Session& s) {
             UE_LOGI("[DESK-PANEL-DRILL] [%c] took the panel off: prop born at (%.1f, %.1f, %.1f), put down beside "
                     "the player", Who(), g_lidAt.X, g_lidAt.Y, g_lidAt.Z);
         }
-        Stands(State{g_base.on & ~kBit, g_base.unscrewed | kBit, 1}, Step::PutBack);
+        Stands(State{g_base.on & ~g_bit, g_base.unscrewed | g_bit, g_base.props + 1}, Step::PutBack);
         return;
     }
     case Step::PutBack: {
         // The acting player's grab names the panel and it is set back where the press spawned it, inside
-        // its lid: the carrier's own desk puts it on. Repeated a few times.
+        // its lid: the carrier's own desk puts it on. The desk hears an actor's first touch only, so a
+        // prop that lies against any of its volumes is set well clear first. Repeated a few times.
         State mine{};
         const uint64_t now = coop::net::NowMs();
-        if (ReadState(mine) && !(mine.on & kBit) && g_putTries < kPutTries && now >= g_nextPutMs) {
+        if (ReadState(mine) && !(mine.on & g_bit) && g_putTries < kPutTries && now >= g_nextPutMs) {
             void* prop = g_prop.Get();
             if (!prop) return Verdict(false, "put-back: the panel prop is gone while the panel is still off");
             ++g_putTries;
             g_nextPutMs = now + 1000;
             const bool held = Grab(prop);
+            E::SetActorLocation(prop, FVector{g_lidAt.X, g_lidAt.Y, g_lidAt.Z + 1000.f});
             const bool ok = E::SetActorLocation(prop, g_lidAt);
             Grab(nullptr);
             UE_LOGI("[DESK-PANEL-DRILL] [%c] put-back try %d: held=%d snap=%d, the desk's take-off latch reads %d",
                     Who(), g_putTries, held ? 1 : 0, ok ? 1 : 0, TakeOffLatch(CD::Instance()));
             g_stepMs = now;  // the dwell and the bound run from the last snap
         }
-        Stands(State{g_base.on, g_base.unscrewed | kBit, 0}, Step::Rebolt);
+        if (Stands(State{g_base.on, g_base.unscrewed | g_bit, g_base.props}, g_wasBolted ? Step::Rebolt : Step::Done) &&
+            !g_wasBolted)
+            UE_LOGI("[DESK-PANEL-DRILL] [%c] PASS take-off and put-back each stood on both peers; the save held the "
+                    "panel unbolted (put-back snaps %d)", Who(), g_putTries);
         return;
     }
     case Step::Rebolt: {
@@ -323,12 +356,14 @@ void TickRace() {
         if (!g_goSeenMs) {
             if (!DC::ChatHasLive(kSayGo)) return;
             g_goSeenMs = coop::net::NowMs();
+            State base{};
+            if (ReadState(base)) g_raceBaseProps = base.props;
         }
         const uint64_t at = g_goSeenMs + kRaceLeadMs - (Host() ? 0 : kRaceEarlyMs);
         if (!g_pressed && coop::net::NowMs() >= at) {
             g_pressed = true;
             const bool ok = Press();
-            CarryAway(FirstPanelProp());
+            CarryAway(PressedPanelProp());
             UE_LOGI("[DESK-PANEL-DRILL] [%c] race press dispatched=%d, panel props here %d", Who(), ok ? 1 : 0,
                     PanelProps());
             Go(Step::RaceJudge);
@@ -341,11 +376,12 @@ void TickRace() {
     const unsigned long long denied = coop::desk_panel_sync::TakeOffsDenied();
     if (!haveMine || !haveTheirs)
         return Verdict(false, "race: a state did not read (here %d, there %d)", haveMine ? 1 : 0, haveTheirs ? 1 : 0);
-    if (mine.props != 1 || (mine.on & kBit) || !(mine == theirs))
-        return Verdict(false, "race: wanted the panel off and one panel prop on both peers; here on=0x%X props=%d, "
-                       "there on=0x%X props=%d (take-offs denied here %llu)", mine.on, mine.props, theirs.on,
-                       theirs.props, denied);
-    Verdict(true, "race: the panel is off and one panel prop is left on both peers (take-offs denied here %llu)", denied);
+    if (mine.props != g_raceBaseProps + 1 || (mine.on & g_bit) || !(mine == theirs))
+        return Verdict(false, "race: wanted the panel off and one panel prop more than the %d before on both peers; "
+                       "here on=0x%X props=%d, there on=0x%X props=%d (take-offs denied here %llu)", g_raceBaseProps,
+                       mine.on, mine.props, theirs.on, theirs.props, denied);
+    Verdict(true, "race: the panel is off and one panel prop more is left on both peers (take-offs denied here %llu)",
+            denied);
 }
 
 }  // namespace
@@ -370,6 +406,10 @@ void OnDisconnect() {
     g_stepMs = 0;
     g_acted = false;
     g_prop.Reset();
+    g_picked = false;
+    g_wasBolted = true;
+    g_raceBaseProps = -1;
+    g_beforePress.clear();
     g_putTries = 0;
     g_nextPutMs = 0;
     g_goSeenMs = 0;

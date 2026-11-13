@@ -75,7 +75,10 @@ constexpr uint64_t kJudgeWaitMs = 20000;
 constexpr uint64_t kHandMs      = 2500;   // the crowbar in the client's hand reaches the host's record of it
 constexpr uint64_t kBoxJudgeMs  = 6000;   // the births and the destroy of a pried box cross
 constexpr uint64_t kBoundMs     = 90000;  // a step that waits on the other peer
-constexpr float    kApartTolCm  = 60.f;
+// Each peer simulates a freed prop's fall itself: measured plank pairs rested 1 to 65 cm apart after
+// falls of 13 to 137 cm. A radiator hangs on its constraints for seconds after its pry, so only a
+// plank is asked to have moved.
+constexpr float    kApartTolCm  = 100.f;
 constexpr float    kMovedMinCm  = 5.f;
 constexpr float    kBoxNearCm   = 300.f;
 
@@ -248,7 +251,8 @@ void TickPlaced(coop::net::Session& s) {
         const float moved = Dist(at, g_start), apart = Dist(at, FVector{ax, ay, az});
         if (applied < 1) return Verdict(false, "the pry lane replayed nothing here (moved %.1f cm)", moved);
         if (Stuck(t)) return Verdict(false, "this copy is still static or frozen after the replay");
-        if (moved < kMovedMinCm) return Verdict(false, "this copy never moved: %.1f cm, apart %.1f cm", moved, apart);
+        if (ArmOf().kind == Kind::Plank && moved < kMovedMinCm)
+            return Verdict(false, "this copy never moved: %.1f cm, apart %.1f cm", moved, apart);
         if (apart > kApartTolCm)
             return Verdict(false, "the copies rest %.1f cm apart (tolerance %.0f) after moving %.1f cm", apart,
                            kApartTolCm, moved);

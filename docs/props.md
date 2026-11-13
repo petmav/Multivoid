@@ -320,7 +320,7 @@ goes to the host as `PropPryIntent`; the host runs the box's `crowbarOpen` on it
 is within reach and its hand held a crowbar last, and the births and the destroy cross as the host's
 own. `[V]` `coop/dev/pried_drill` (`VOTVCOOP_PRIED_DRILL=plank_host|plank_client|radiator_host|radiator_client|box_host|box_client`,
 both peers) pries a level plank, a radiator and a dropped closed box from each side: the watching
-peer's copy was freed by the replay and rested 8 to 11 cm from the acting peer's, and a pried box left
+peer's copy was freed by the replay and rested 1 to 65 cm from the acting peer's (each peer simulates the fall itself), and a pried box left
 one open box in its place on both peers, the client's through the host's judge.
 
 ### Containers

@@ -323,6 +323,12 @@ void TickClient(coop::net::Session& s) {
         if (!g_acted) {
             g_acted = true;
             void* held = coop::hand_item::LocalHandActor();
+            // A wheel fresh from its class can carry no durability, which a fit refuses as broken.
+            const int32_t durOff = (wheel && held) ? R::FindPropertyOffset(R::ClassOf(held), L"durability") : -1;
+            if (durOff >= 0) {
+                float& durability = *reinterpret_cast<float*>(reinterpret_cast<uint8_t*>(held) + durOff);
+                if (durability <= 0.f) durability = 50.f;
+            }
             const auto before = coop::atv_part_intent::GetStats();
             const bool ran = held && CallFit(g_atv.Get(), held);
             const auto st = coop::atv_part_intent::GetStats();
