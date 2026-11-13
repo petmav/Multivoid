@@ -299,6 +299,30 @@ since a crowbar's pry frees a pryable sign with nobody holding it: the script ga
 component's unstick on every route, the unsticking peer broadcasts the prop's pose and velocity, and
 a receiver runs the same unstick with the tool and lets its copy go. `[V]` `coop/dev/pry_drill` (`VOTVCOOP_PRY_DRILL=client|host`, both peers) pries one stuck banister with no crowbar: the acting peer says where its copy rests in the lobby chat, and the watching peer prints `[PRY-DRILL] [H|C] PASS` when its own copy left the wall, is no longer stuck and rests within 25 cm of that place (measured pairs rested 4 and 11 cm apart, 172 cm off the wall), else `FAIL`.
 
+### Pried by a crowbar
+
+A prying crowbar ends in the pried object's own `crowbarOpen`. A wall-attach component's owner (a
+banister, a sign) frees itself there through the component's unstick, which is the stick lane's above,
+and a door's pry is the door lane's ([devices.md](devices.md)). The other pryable props change
+themselves in that body with no component to watch: a plank (`prop_pryablePlank_C`) clears its static
+and frozen through its own `setPropProps` and takes the crowbar's kick, and a radiator and the security
+TV start their breaking sequence, which clears the flags and breaks the constraints that hang them one
+by one. The script gate watches `crowbarOpen` on every class (`coop/props/prop_pry_sync`): once the
+body has run on a prop with no wall-attach component, the prying peer sends the prop's pose and
+velocity on the stick lane's message, marked as a pry, and a receiver runs its copy's own `crowbarOpen`
+with no crowbar and lets the copy go from that pose with that velocity, as for an unstick. A radiator's
+constraints break on each peer's own random order and timers, so the copies hang differently while
+they fall apart `[RD]`.
+
+A closed dynamite box's pry replaces the prop: the body spawns the open box and its lid and destroys
+the closed one. A client's births do not cross, so a client's pry of one is cancelled at the gate and
+goes to the host as `PropPryIntent`; the host runs the box's `crowbarOpen` on its copy when the sender
+is within reach and its hand held a crowbar last, and the births and the destroy cross as the host's
+own. `[V]` `coop/dev/pried_drill` (`VOTVCOOP_PRIED_DRILL=plank_host|plank_client|radiator_host|radiator_client|box_host|box_client`,
+both peers) pries a level plank, a radiator and a dropped closed box from each side: the watching
+peer's copy was freed by the replay and rested 8 to 11 cm from the acting peer's, and a pried box left
+one open box in its place on both peers, the client's through the host's judge.
+
 ### Containers
 
 What a container holds, who may put into and take from it, and how its contents reach a joiner are in
@@ -460,6 +484,8 @@ where the sender stood, and a refused release is answered like a refused bite. A
 | a prop's key | the game, once; the host's copy wins on a mirror | never rewritten on the owner |
 | container contents | the host | slices of its object array; an extraction is an intent |
 | a stuck prop, and its unstick | the peer that sticks or frees it; every peer runs the component's own verb | one reliable message |
+| a pried plank, radiator or security TV | the peer that pries it; every peer runs the prop's own verb | one reliable message |
+| a pried dynamite box | the host | a client's pry is an intent; the births and the destroy are the host's |
 | a self-changing prop's progression | the host | park, corrector or anchor, per prop |
 | notebook editor occupancy | the host arbitrates | a claim keyed by the owning prop |
 | notebook page text | the editing peer; the host takes it from the claim's holder, or from anyone while it is free | the notebook's own save record on the record lane, at the editor's commit and at the close |
@@ -480,7 +506,8 @@ where the sender stood, and a refused release is answered like a refused bite. A
 | `PropSyncClaim`, `PropSyncAnswer` | a client to the host; the host to that client | a client's request to sync a prop its interaction moves, and the host's grant, refusal (with the reason) or revoke (with the generation); the host also grants a thrown prop to its thrower unasked, `seq` being the throw sequence `[?]` |
 | `PropDropIntent`, `ReelEjectIntent` | a client to the host | a place, a throw or an unavoidable birth, for the host to author, with the placed root's velocity and the throw sequence |
 | `PropSaveData`, `PropSaveDataIntent` | the host to all or one joiner; a client to the host | a prop's save record, chunked as a blob: its key and the actorData stream of its own `betterGetData`; a client's is a claim the host lands and re-publishes `[RD]` |
-| `PropStickState` | the peer that sticks or frees it, to all | frozen or static, the commit pose and the hold the stick ended; or an unstick, with the pose and velocity |
+| `PropStickState` | the peer that sticks or frees it, to all | frozen or static, the commit pose and the hold the stick ended; or an unstick, with the pose and velocity; or a pry of a prop with no wall-attach component, with the pose and velocity |
+| `PropPryIntent` | a client to the host | a pry whose body replaces the prop (a closed dynamite box), by the prop's key and id, for the host to run |
 | `PropSnapPos` | the host to one joiner | a position correction for a save-authoritative prop moved in the join window, with a keyed prop's frozen and sleep; it carries the host's drive context for the prop (claim generation and open), the client drops one older than a drive END still on its copy, and a prop a hand held after its correction went out gets a follow-up after the release `[?]` |
 | `ContainerState`, `ContainerContents` | the presser; the host | open or closed; one slice of the host's object array |
 | `InventoryPickup` | each peer, relayed | the pocket blip, so others hear a pickup |
@@ -538,6 +565,7 @@ prop resolves.
 | the prop-properties tool | `coop/props/prop_tool_flags`; the toolgun's sight and limits, shared with the remover: `coop/props/toolgun_sight`, `coop/props/toolgun_limits` |
 | a client's intents | `coop/props/prop_drop_intent`; a thrown prop: `coop/props/prop_throw`, `coop/net/throw_bounds` |
 | the stick | `coop/props/prop_stick_sync` |
+| a pry of a prop with no wall-attach component | `coop/props/prop_pry_sync`, `ue_wrap/actors/prop_events` |
 | a prop under a hook's drive or a broom's push | `coop/props/prop_drive_host` (the host's set and stream), `coop/props/prop_drive_stream` (the receiver), `coop/items/hook_prop_claim` (the hook lane feeding it), `coop/items/hook_constraint` (the tie itself, host-only), `coop/items/broom_push` (the broom's push feeding it) |
 | containers | `coop/props/container_contents_sync`, `coop/items/save_record_wire`, `coop/interactables/interactable_sync` |
 | a world food's condition | `coop/props/prop_food_sync`, `ue_wrap/actors/food` |

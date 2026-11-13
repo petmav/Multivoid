@@ -416,6 +416,31 @@ CFG_ENUM(pry_drill, "pry_drill", "dev", "off", "off|host|client|join",
     "runs its copy's hand unstick, which a pryable refuses with its 'Tool required' hint. client: the "
     "client pries and the host watches. join: the host pries while a joiner is still loading. Both peers "
     "print every pryable they have and every change of one.")
+CFG_ENUM(pried_drill, "pried_drill", "dev", "off",
+    "off|plank_host|plank_client|radiator_host|radiator_client|box_host|box_client",
+    "VOTVCOOP_PRIED_DRILL",
+    "Drill (BOTH peers): a crowbar's pry of a prop with no wall-attach component, by the prop's own "
+    "crowbarOpen with no crowbar. plank_* and radiator_*: the watching peer names the first stuck prop "
+    "of the class, the acting peer pries it and says where its copy rests, and the watching peer "
+    "judges its own copy. box_*: the host drops a closed dynamite box and names it, the acting peer "
+    "pries it (the client with a crowbar in hand), and each peer judges that one open box replaced "
+    "it; run these with join_at_host=1. One `[PRIED-DRILL] [H|C] PASS` or `FAIL` line per judge.")
+CFG_ENUM(oven_progress_drill, "oven_progress_drill", "dev", "off", "off|host|client|join",
+    "VOTVCOOP_OVEN_PROGRESS_DRILL",
+    "Drill (BOTH peers): the oven's screws and lid. host and client: the acting peer sets a screw's "
+    "bool on its own repair screen, then the other three, then the lid's; the watching peer says its "
+    "screen's mask whenever it changes and each step must stand there before the next. join: the "
+    "host's screen takes all five before anyone joins and the joiner judges its own screen after its "
+    "join. One `[OVEN-DRILL] [H|C] PASS` or `FAIL` line per judge; an oven the save holds repaired "
+    "fails by name.")
+CFG_ENUM(desk_panel_drill, "desk_panel_drill", "dev", "off", "off|host|client|race",
+    "VOTVCOOP_DESK_PANEL_DRILL",
+    "Drill (BOTH peers): the desk's back panels. host and client: the acting peer unbolts the top-left "
+    "panel through the desk's own unscrewPanel, takes it off through the desk's own E press, and "
+    "puts the panel prop back into its place; after each step the watching peer says the masks its "
+    "desk holds, and the acting peer judges them against its own. race: both peers take the same "
+    "unbolted panel on one net-clock instant, and each judges that one panel prop is left. One "
+    "`[DESK-PANEL-DRILL] [H|C] PASS` or `FAIL` line per judge.")
 CFG_FLAG(recycled_slot_drill, "recycled_slot_drill", "dev", false, "VOTVCOOP_RECYCLED_SLOT_DRILL",
     "Drill (either peer): once the local pawn and the object index are up, stage an object slot the "
     "engine recycled on the pawn's root component -- a queued birth naming the slot's old class, and a "

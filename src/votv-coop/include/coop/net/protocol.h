@@ -30,7 +30,7 @@ inline constexpr uint32_t kMagic = 0x564D5450u;
 // This file is past the 1500-line hard cap and stays there: it is the single-feature exception the
 // rule names. One wire format, whose enum, payload structs and static_asserts are read together;
 // splitting it would put a kind's number in one file and its bytes in another.
-inline constexpr uint16_t kProtocolVersion = 285;
+inline constexpr uint16_t kProtocolVersion = 288;
 
 // Default LAN port (overridable via multivoid.ini "net.port=").
 inline constexpr uint16_t kDefaultPort = 47621;
@@ -273,7 +273,7 @@ enum class ReliableKind : uint8_t {
     // syncer's block goes to the host alone, which applies it and re-sends it to every other client
     // stamped with the host's seat and syncer; the host's own copy goes out while it drives or carries,
     // and at 5 Hz on change while it syncs an idle ATV. A receiver keeps simulating and is corrected
-    // toward the wire; presence fields (tires, spare) are taken from the host's own copy only. Keyed by
+    // toward the wire; presence fields (tires, spare, a fitted battery) are taken from the host's own copy only. Keyed by
     // the ATV's Key; never relayed; the host snapshots every ATV's stamped block to a joiner.
     // AtvStatePayload.
     AtvState = 37,
@@ -1381,6 +1381,32 @@ enum class ReliableKind : uint8_t {
     // edge. A client writes it over its copy of the ATV's component so the inventory screen it opens on the ATV shows the
     // host's trunk. Host-authored: refused at the host's receive edge; never relayed; not pre-world.
     AtvTrunk = 238,
+
+    // Client to host: this client's crowbar pried a prop whose pry replaces it (a closed dynamite box: the body spawns
+    // the open box and its lid and destroys the closed one). The client's own body is cancelled, since a client's
+    // births do not cross, and the host runs the prop's crowbarOpen on its copy when the sender is within reach and
+    // its hand held a crowbar last; the births and the destroy then cross as the host's. Never relayed; not
+    // pre-world. Late join: none, a request is an act. PropPryIntentPayload.
+    PropPryIntent = 244,
+
+    // Peer to host: one of the desk's back panels bolted or unbolted, taken off or put back; host to all, and to a
+    // joiner at its connect replay: the canonical pair of masks. The host refuses an edit its own desk does not allow
+    // and answers the author with the canonical. Never relayed. DeskPanelStatePayload.
+    DeskPanelState = 245,
+
+    // Client to host: this client's work on an ATV's wheels, spare or battery (atv_part's op): a wheel or the battery
+    // unbolted, a held wheel fitted or stowed as the spare, a held battery put in, the spare taken. The client's own
+    // body is cancelled; the host judges the sender (world ready, the ATV known and synced by the host, within reach,
+    // the tool or the part in its hand, the ATV's own state) and runs the change on its copy, so the part's birth and
+    // the presence in AtvState cross as the host's. A refused fit, stow or insert is refunded as a prop beside the
+    // sender. Never relayed; not pre-world. Late join: none, a request is an act. AtvPartIntentPayload.
+    AtvPartIntent = 246,
+
+    // Any peer to all (a client's through the host's relay), and host to a joiner at its connect replay: the steps
+    // of one kitchen oven's repair that come before its wiring, as a mask of the four screws out and the lid off.
+    // The bits are never cleared, so a receiver raises on its own repair screen every bit it lacks. Client-allowed;
+    // relayed. OvenProgressStatePayload.
+    OvenProgressState = 247,
 };
 
 #pragma pack(push, 1)
@@ -1764,11 +1790,14 @@ static_assert(sizeof(VoiceStatePayload) == 4, "VoiceStatePayload must be 4 bytes
 // and which field the Blueprint set (bit 0 frozen, bit 1 static), or 0 for an unstick. A stick
 // carries the commit-time transform the receiver pre-poses to before replaying the component's own
 // forceStick; an unstick carries the prop's transform and velocity once the unsticking peer's body
-// freed it, which a pry's kick is part of, and the receiver lets its copy go from there.
+// freed it, which a pry's kick is part of, and the receiver lets its copy go from there. kPropStickPried
+// alone is a crowbar's pry of a prop with no wall-attach component (a plank, a radiator): the receiver
+// runs the prop's own crowbarOpen and lets its copy go from the transform and velocity the same way.
+inline constexpr uint8_t kPropStickPried = 4;
 struct PropStickStatePayload {
     WireKey  key;
     uint32_t elementId;
-    uint8_t  flags;      // bit0 = frozen, bit1 = static; 0 = unstuck
+    uint8_t  flags;      // bit0 = frozen, bit1 = static; 0 = unstuck; kPropStickPried = pried
     uint8_t  _pad;       // zeroed
     uint16_t holdGen;    // the sticking peer's hold, which the stick closes; 0 on an unstick
     float locX, locY, locZ;
@@ -3249,8 +3278,10 @@ struct AtvStatePayload {
     int8_t   tiresFixes[4];       // 4  -- per-wheel repair countdown (int32 in-game, int8 on wire)
     uint8_t  tiresTypes[4];       // 4  -- setWheelsType input (zero runtime writers measured; kept
                                   //      because it IS reducer input and 4 B closes the class)
+    float    battery;             // 4  -- the fitted battery's charge, 0..100, below zero = none fitted. The charge is
+                                  //      the syncer's; whether one is fitted is PRESENCE, the host's own copy only
 };
-static_assert(sizeof(AtvStatePayload) == 148, "AtvStatePayload must be 148 bytes");
+static_assert(sizeof(AtvStatePayload) == 152, "AtvStatePayload must be 152 bytes");
 
 // stateBits bit 3: the block is the syncer's, re-sent by the host (a client syncer's pose and condition), not the
 // host's own copy. A receiver applies the pose and condition of such a block to an ATV it does not sync; the host's
@@ -3339,6 +3370,30 @@ struct AtvAnswerPayload {
 };
 static_assert(sizeof(AtvAnswerPayload) == 40, "AtvAnswerPayload must be 40 bytes");
 static_assert(sizeof(AtvAnswerPayload) <= 256 - 20 - 8, "AtvAnswerPayload must fit in one reliable datagram");
+
+// A client's work on an ATV's wheels, spare or battery (AtvPartIntent). The scalars are the part the sender's hand
+// held, read on its machine as it sent: a fitted or stowed wheel's three, a battery's charge in `durability`. The host
+// clamps them to the game's domains.
+namespace atv_part {
+constexpr uint8_t kRemoveWheel = 0;    // the wrench's last step on a fitted wheel: `index`
+constexpr uint8_t kRemoveBattery = 1;  // the wrench's last step on the ATV's body
+constexpr uint8_t kFitWheel = 2;       // the held wheel into the empty socket `index`
+constexpr uint8_t kStowSpare = 3;      // the held wheel into the spare box
+constexpr uint8_t kInsertBattery = 4;  // the held battery into an ATV that has none
+constexpr uint8_t kTakeSpare = 5;      // the spare out of its box
+constexpr uint8_t kOpCount = 6;
+}  // namespace atv_part
+struct AtvPartIntentPayload {
+    WireKey key;         // 32 -- the ATV's Key
+    uint8_t op;          // 1  -- an atv_part op; anything else is malformed
+    uint8_t index;       // 1  -- kRemoveWheel, kFitWheel: the wheel, 0..3; else 0
+    int8_t  fixes;       // 1  -- kFitWheel, kStowSpare: the wheel's repair countdown; else 0
+    uint8_t pad;         // 1  -- zero
+    float   durability;  // 4  -- kFitWheel, kStowSpare: the wheel's durability; kInsertBattery: the charge; else 0
+    float   dirt;        // 4  -- kFitWheel, kStowSpare: the wheel's dirt; else 0
+};
+static_assert(sizeof(AtvPartIntentPayload) == 44, "AtvPartIntentPayload must be 44 bytes");
+static_assert(sizeof(AtvPartIntentPayload) <= 256 - 20 - 8, "AtvPartIntentPayload must fit in one reliable datagram");
 
 // The drone's state (DroneState): transform, activity, effect bits and the dust anchor.
 struct DroneStatePayload {
@@ -4168,6 +4223,41 @@ struct PhysModsStatePayload {
     uint8_t bytes[12];  // 12 -- op 2: the canonical array; else zero
 };
 static_assert(sizeof(PhysModsStatePayload) == 16, "PhysModsStatePayload must be 16 bytes");
+
+// The desk back panels lane (DeskPanelState). A mask carries one bit per panel, bit i for panel i of the
+// desk's panels array.
+namespace desk_panel {
+constexpr uint8_t kSetOn = 0;
+constexpr uint8_t kSetUnscrewed = 1;
+constexpr uint8_t kCanonical = 2;
+constexpr uint8_t kDeny = 3;
+}  // namespace desk_panel
+struct DeskPanelStatePayload {
+    uint8_t op;            // 1 -- desk_panel::kSetOn or kSetUnscrewed (peer->host), kCanonical (host->all),
+                           //      kDeny (host->the author of a take-off another peer's came before)
+    uint8_t panel;         // 1 -- the two edits and kDeny: the panel; kCanonical: 0
+    uint8_t value;         // 1 -- the two edits: 1 or 0; kCanonical and kDeny: 0
+    uint8_t onMask;        // 1 -- kCanonical: the panels that are on the desk; else 0
+    uint8_t unscrewedMask; // 1 -- kCanonical: the panels whose bolts are out; else 0
+    uint8_t _pad[3];       // 3 -- zero
+};
+static_assert(sizeof(DeskPanelStatePayload) == 8, "DeskPanelStatePayload must be 8 bytes");
+
+// The steps of an oven's repair before its wiring (OvenProgressState): the oven by key, and a mask with
+// bits 0..3 for the top-left, top-right, bottom-left and bottom-right screws out and bit 4 for the lid off.
+struct OvenProgressStatePayload {
+    WireKey key;      // 32 -- the oven's key
+    uint8_t mask;     // 1  -- the steps done
+    uint8_t _pad[3];  // 3  -- zero
+};
+static_assert(sizeof(OvenProgressStatePayload) == 36, "OvenProgressStatePayload must be 36 bytes");
+
+// A pry the host is asked to run (PropPryIntent): the prop by key, its eid as the fallback.
+struct PropPryIntentPayload {
+    WireKey  key;        // 32 -- the prop's key
+    uint32_t elementId;  // 4  -- its element id, 0 when it has none
+};
+static_assert(sizeof(PropPryIntentPayload) == 36, "PropPryIntentPayload must be 36 bytes");
 
 // One drive-slot state line (DriveSlotState). role: 0 the desk play slot, 1 the desk comp slot,
 // 2 the eraser slot. occupied 1 names the slotted drive; 0 means empty, with driveEid the last

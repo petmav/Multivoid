@@ -33,6 +33,7 @@
 #include "coop/props/prop_act_host.h"  // CLIENT->HOST a take or use of a shared prop, and its commit
 #include "coop/props/prop_act_request.h"  // HOST->CLIENT its answer
 #include "coop/props/prop_drop_intent.h"  // CLIENT->HOST client-placed keyed prop
+#include "coop/props/prop_pry_sync.h"  // CLIENT->HOST a pry whose body replaces the prop
 #include "coop/props/prop_tool_flags.h"  // CLIENT->HOST a press of the prop-properties tool; HOST->CLIENT its answer
 #include "coop/props/remover_request.h"  // CLIENT->HOST the tool gun's remover; HOST->CLIENT its answer
 #include "coop/items/broom_stroke.h"
@@ -52,6 +53,27 @@ namespace coop::event_feed {
 bool HandleIntentEvent(net::Session& session,
                        const net::Session::ReliableMessage& msg) {
     switch (msg.kind) {
+    case net::ReliableKind::PropPryIntent: {
+        // CLIENT->HOST: a client's crowbar pried a prop whose pry replaces it; the host runs the prop's own
+        // crowbarOpen. coop::prop_pry_sync::OnPryIntent judges the sender.
+        if (session.role() != net::Role::Host) {
+            UE_LOGW("event_feed: PropPryIntent received on a client -- dropping");
+            break;
+        }
+        if (msg.senderPeerSlot < 1 || msg.senderPeerSlot >= net::kMaxPeers) {
+            UE_LOGW("event_feed: PropPryIntent from invalid senderPeerSlot=%d -- dropping", msg.senderPeerSlot);
+            break;
+        }
+        if (msg.payloadLen < sizeof(net::PropPryIntentPayload)) {
+            UE_LOGW("event_feed: PropPryIntent payload too short (%zu < %zu)",
+                    static_cast<size_t>(msg.payloadLen), sizeof(net::PropPryIntentPayload));
+            break;
+        }
+        net::PropPryIntentPayload p{};
+        std::memcpy(&p, msg.payload, sizeof(p));
+        coop::prop_pry_sync::OnPryIntent(session, p, static_cast<uint8_t>(msg.senderPeerSlot));
+        break;
+    }
     case net::ReliableKind::DoorVerbIntent: {
         // CLIENT->HOST: a client pressed, hit or pried a base door, and the host runs the same entry
         // verb on its own copy. The door's resolve, the reach and the rate live in the module; the

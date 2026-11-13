@@ -8,6 +8,8 @@
 #include "coop/interactables/console_state_sync.h"
 #include "coop/interactables/desk_input_sync.h"
 #include "coop/interactables/physmods_sync.h"  // desk physical-modules lane
+#include "coop/interactables/desk_panel_sync.h"  // desk back panels lane
+#include "coop/interactables/oven_progress_sync.h"  // the oven's screws and lid
 #include "coop/items/order_queue_sync.h"  // the delivery order queue, the host's, mirrored
 #include "coop/interactables/drive_payload_sync.h"  // a drive's row, the host's
 #include "coop/interactables/drive_sync.h"  // the drive slots
@@ -134,6 +136,8 @@ void ConnectReplayForSlot(int slot) {
     coop::desk_input_sync::SeedPingAttributionFromMachine();  // a SOLO host's ping edge is absorbed unwired (PollOnce gated on connected) -- re-derive from ground truth so a mid-ping joiner gets the FSM-hold
     coop::desk_snd_fx::QueueConnectBroadcastForSlot(slot);  // desk loop-sound ground truth (a mid-loop joiner gets the ON)
     coop::physmods_sync::QueueConnectBroadcastForSlot(slot);  // canonical module array (ground truth over save drift)
+    coop::desk_panel_sync::QueueConnectBroadcastForSlot(slot);  // canonical back-panel masks
+    coop::oven_progress_sync::QueueConnectBroadcastForSlot(slot);  // each oven's screws out and lid off
     coop::props::prop_food_sync::QueueConnectBroadcastForSlot(slot);  // every world food's condition again
     coop::plant_sync::QueueConnectBroadcastForSlot(slot);  // every plant again
     coop::drive_sync::QueueConnectBroadcastForSlot(slot);  // slot lines

@@ -18,6 +18,14 @@ deploy and publish scripts refuse on a mismatch between the resource and the tre
 numbers themselves are minted in an append-only ledger in `.github/ci/`, and a tag or a
 release page is a drift detector, never the authority ([release.md](release.md)).
 
+Build 288 added the `PropPryIntent` and `DeskPanelState` kinds and the pry mark on `PropStickState` (a crowbar's pry of a plank, a
+radiator, the security TV or a closed dynamite box, [props.md](props.md); the desk's back panels, [signals.md](signals.md)), so a
+peer on 287 cannot join one on 288.
+
+Build 288 also added the `AtvPartIntent` kind and the battery's charge on `AtvState` (a client's work on an ATV's wheels, spare
+and battery, [vehicles.md](vehicles.md)), and the `OvenProgressState` kind (the screws and the lid of an oven's repair,
+[devices.md](devices.md)).
+
 An unofficial build -- any `main.dll` without its release signature -- shows `(unofficial build)`
 after the version. A host refuses a player on a build of the other kind -- an unofficial build on an
 official host (MV-H30), the official build on a modified host (MV-H31) -- unless it allows other

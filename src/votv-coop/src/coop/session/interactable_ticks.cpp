@@ -6,6 +6,7 @@
 #include "coop/interactables/comp_sync.h"
 #include "coop/interactables/deck_play_sync.h"
 #include "coop/interactables/desk_input_sync.h"
+#include "coop/interactables/desk_panel_sync.h"
 #include "coop/interactables/desk_sim_sync.h"
 #include "coop/interactables/desk_snd_fx.h"
 #include "coop/interactables/dish_hashcode_sync.h"
@@ -15,6 +16,7 @@
 #include "coop/interactables/drive_rack_sync.h"
 #include "coop/interactables/drive_sync.h"
 #include "coop/interactables/meadow_db_sync.h"
+#include "coop/interactables/oven_progress_sync.h"
 #include "coop/interactables/physmods_sync.h"
 #include "coop/interactables/sat_console_sync.h"
 #include "coop/interactables/signal_sync.h"
@@ -43,6 +45,8 @@ void Tick() {
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:desk_snd"}; coop::desk_snd_fx::Tick(); }  // audio-seam ring flush + lazy hook install + pending loop retry
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:deck_play"}; coop::deck_play_sync::Tick(); }  // deck playback ring flush + lazy Deactivate/fin seam install + gen author
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:physmods"}; coop::physmods_sync::Tick(); }  // parked-canonical apply at desk resolve
+    { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:desk_panels"}; coop::desk_panel_sync::Tick(); }  // parked-canonical apply + the panels' edits
+    { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:oven_progress"}; coop::oven_progress_sync::Tick(); }  // the oven screens' steps, 4 Hz
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:drive"}; coop::drive_sync::Tick(); coop::drive_payload_sync::Tick(); }  // the slot lane's drain and sweep; the rows' enrolments
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:drive_rack"}; coop::drive_rack_sync::Tick(); }  // rack barrier drain + 1 Hz sweep
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:email"}; coop::email_sync::Tick(); }  // email shadow poll (1 Hz; appends -> chunked broadcast, shrinks -> content-keyed deletes)
