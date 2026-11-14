@@ -14,6 +14,8 @@
 #include "coop/interactables/desk_ping_sync.h"
 #include "coop/interactables/deck_play_sync.h"  // deck playback lane
 #include "coop/interactables/physmods_sync.h"  // desk physical-modules lane
+#include "coop/gamefix/disc_eject_fix.h"  // game fix: a disc ejected from the PC keeps its edits
+#include "coop/gamefix/food_sleep_fix.h"  // game fix: food and drink give their energy
 #include "coop/interactables/desk_panel_sync.h"  // desk back panels lane
 #include "coop/interactables/oven_progress_sync.h"  // the oven's screws and lid
 #include "coop/items/order_queue_sync.h"  // the delivery order queue, the host's, mirrored
@@ -328,6 +330,8 @@ void Install(coop::net::Session& session) {
     coop::deck_play_sync::Install(&session);  // deck playback edge mirror (audio-seam Activate/Deactivate + gen guard)
     coop::physmods_sync::Install(&session);  // physMods slot ops at the desk's verbs + host-canonical array
     coop::desk_panel_sync::Install(&session);  // the desk's back panels: edits to the host, host-canonical masks
+    coop::gamefix::disc_eject_fix::Install();  // 0.10.0: the PC's eject writes the edited rows onto the disc
+    coop::gamefix::food_sleep_fix::Install();  // 0.10.0: an eat's sleep gain reaches the player's sleep
     coop::oven_progress_sync::Install(&session);  // the oven's screws and lid: each screen's bits, merged
     coop::drive_sync::Install(&session);  // the drive chain's slot lane (verb dirty-marks + the slot sweep; the slot and rack verb watches)
     coop::drive_payload_sync::Install(&session);  // a drive's row: the host authors it at prop_drive_C::upd
