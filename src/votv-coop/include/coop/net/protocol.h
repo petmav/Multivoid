@@ -1442,6 +1442,8 @@ enum class ReliableKind : uint8_t {
     // address one television was asked to play, or a pause, resume or seek of it, the set named by its prop key. The
     // receiver does the same to its own copy of the set; a YouTube address is resolved by each receiver. The last
     // address wins.
+    // Client-allowed; relayed. TvLinkPayload.
+    TvLink = 248,
 };
 
 #pragma pack(push, 1)
@@ -4393,6 +4395,23 @@ struct OvenProgressStatePayload {
     uint8_t _pad[3];  // 3  -- zero
 };
 static_assert(sizeof(OvenProgressStatePayload) == 36, "OvenProgressStatePayload must be 36 bytes");
+
+// One television's web video (TvLink): the set by key, what was done, the play position it was done at, and for a
+// play the address as typed, ASCII, not terminated. The address's length is what one reliable datagram leaves.
+inline constexpr int kTvLinkMax = 186;
+inline constexpr uint8_t kTvOpPlay = 0;    // open `link`; `posMs` is where the sender's set already is (a joiner's replay)
+inline constexpr uint8_t kTvOpPause = 1;   // the remote's stop button
+inline constexpr uint8_t kTvOpResume = 2;  // the remote's play button, from `posMs`
+inline constexpr uint8_t kTvOpSeek = 3;    // the remote's playback slider, to `posMs`
+struct TvLinkPayload {
+    WireKey  key;               // 32  -- the television's key
+    uint16_t linkLen;           // 2   -- characters of `link` in use (0 unless op is kTvOpPlay)
+    uint8_t  op;                // 1   -- kTvOp*
+    uint8_t  _pad;              // 1   -- zero
+    uint32_t posMs;             // 4   -- the play position, milliseconds
+    char     link[kTvLinkMax];  // 186 -- the address
+};
+static_assert(sizeof(TvLinkPayload) == 226, "TvLinkPayload must be 226 bytes");
 
 // A pry the host is asked to run (PropPryIntent): the prop by key, its eid as the fallback.
 struct PropPryIntentPayload {

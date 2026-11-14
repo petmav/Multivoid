@@ -10,6 +10,7 @@
 #include "coop/interactables/physmods_sync.h"  // desk physical-modules lane
 #include "coop/interactables/desk_panel_sync.h"  // desk back panels lane
 #include "coop/interactables/oven_progress_sync.h"  // the oven's screws and lid
+#include "coop/interactables/tv_link_sync.h"  // each television's last web address
 #include "coop/items/order_queue_sync.h"  // the delivery order queue, the host's, mirrored
 #include "coop/interactables/drive_payload_sync.h"  // a drive's row, the host's
 #include "coop/interactables/drive_sync.h"  // the drive slots
@@ -138,6 +139,7 @@ void ConnectReplayForSlot(int slot) {
     coop::physmods_sync::QueueConnectBroadcastForSlot(slot);  // canonical module array (ground truth over save drift)
     coop::desk_panel_sync::QueueConnectBroadcastForSlot(slot);  // canonical back-panel masks
     coop::oven_progress_sync::QueueConnectBroadcastForSlot(slot);  // each oven's screws out and lid off
+    coop::tv_link_sync::QueueConnectBroadcastForSlot(slot);  // each television's last web address
     coop::props::prop_food_sync::QueueConnectBroadcastForSlot(slot);  // every world food's condition again
     coop::plant_sync::QueueConnectBroadcastForSlot(slot);  // every plant again
     coop::drive_sync::QueueConnectBroadcastForSlot(slot);  // slot lines

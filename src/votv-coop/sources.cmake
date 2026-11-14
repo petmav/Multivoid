@@ -447,6 +447,9 @@ set(VOTVCOOP_SOURCES
     src/coop/interactables/physmods_sync.cpp
     src/coop/interactables/desk_panel_sync.cpp
     src/coop/interactables/oven_progress_sync.cpp
+    src/coop/interactables/tv_link_sync.cpp
+    src/coop/interactables/tv_link_resolver.cpp
+    src/ue_wrap/devices/tv.cpp
     src/coop/interactables/drive_payload_sync.cpp
     src/coop/interactables/drive_sync.cpp
     src/coop/interactables/eraser_press_intent.cpp

@@ -28,3 +28,17 @@ CFG_STRING(event_fire_drill, "event_fire_drill", "dev", "", "VOTVCOOP_EVENT_FIRE
     "event of the dev event table (the F1 menu's list) through the menu's own dispatch, then the run stays up "
     "for the seconds given (60 by default) so both logs record what each lane did with it. Lines tagged "
     "[EVENT-FIRE-DRILL]; the host's DONE line ends it. No verdict of its own.")
+CFG_STRING(media_url_probe, "media_url_probe", "dev", "", "VOTVCOOP_MEDIA_URL_PROBE", false,
+    "Probe (either peer): web addresses, `|` between them. Twenty seconds after the world is up the gamemode's "
+    "sixteenth media channel is asked to open each in turn, and the player is read once a second for 25 "
+    "seconds. Lines tagged [MEDIA-URL-PROBE]; each address ends PLAYED or NOT-PLAYED.")
+CFG_STRING(tv_link_drill, "tv_link_drill", "dev", "", "VOTVCOOP_TV_LINK_DRILL", false,
+    "Drill (BOTH peers): a web address. Each peer powers the televisions of its world; the host spawns a set when "
+    "the save holds none and asks it for the address through the TV link lane; each peer reads its set's play "
+    "time for forty seconds. One `[TV-LINK-DRILL] [H|C] PASS` or `FAIL` line per peer.")
+CFG_STRING(host_place, "host_place", "dev", "", "VOTVCOOP_HOST_PLACE", false,
+    "Drill aid (host): `x,y,z`. The host's own player is put there once its world is up, before anyone joins, so "
+    "a drill whose client joins at the host and walks starts from a known spot. One [HOST-PLACE] line.")
+CFG_STRING(event_fire_walk, "event_fire_walk", "dev", "", "VOTVCOOP_EVENT_FIRE_WALK", false,
+    "Drill aid (host), with event_fire_drill: `x,y,z`. Five seconds after the fire the host's player is put there, "
+    "for an event whose actor waits for a player to walk into it (the Rozital hole). One [EVENT-FIRE-DRILL] line.")

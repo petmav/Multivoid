@@ -4,6 +4,7 @@
 
 #include "coop/creatures/boar_sync.h"
 #include "coop/dev/perf_probe.h"
+#include "coop/interactables/tv_link_sync.h"
 #include "coop/net/session.h"
 #include "coop/props/fireext_thrust_sync.h"
 #include "coop/world/agrav_sync.h"
@@ -16,9 +17,11 @@ namespace coop::event_lanes {
 
 void Install(coop::net::Session& session) {
     coop::trash_fling_sync::Install(&session);  // the trash prank's fling: a post watch on the trasher
+    coop::tv_link_sync::Install(&session);  // a web video on a television: watches on the set and its remote
 }
 
 void Tick(coop::net::Session& session, bool isHost) {
+    coop::tv_link_sync::Tick();  // a link that waits for its set (returns at once when none does)
     if (!isHost) return;
     namespace PP = coop::dev::perf_probe;
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:trash_fling"}; coop::trash_fling_sync::Tick(&session); }  // the props the trash prank flung
@@ -34,6 +37,7 @@ void OnDisconnect() {
     coop::fireext_thrust_sync::OnDisconnect();  // the thrusting extinguishers it held
     coop::copy_graph_gate::OnDisconnect();  // what a client's copies were refused
     coop::obelisk_copy::OnDisconnect();  // the spawn hook disarmed
+    coop::tv_link_sync::OnDisconnect();  // the parked links and each set's last address
 }
 
 }  // namespace coop::event_lanes
