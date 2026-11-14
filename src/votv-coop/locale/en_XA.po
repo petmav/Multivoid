@@ -260,6 +260,9 @@ msgstr "[[%s (without passwords)]]"
 msgid "%s (you)"
 msgstr "[[%s (you)]]"
 
+msgid "(Q closes it too)"
+msgstr "[[(Q closes it too)]]"
+
 msgid "(Unstuck lifts you 1.5 m straight up)"
 msgstr "[[(Unstuck lifts you 1.5 m straight up)]]"
 
@@ -438,6 +441,9 @@ msgstr "[[Click to mute your mic]]"
 msgid "Clock"
 msgstr "[[Clock]]"
 
+msgid "Close it"
+msgstr "[[Close it]]"
+
 #, c-format
 msgid "Code %s -- include it in a bug report"
 msgstr "[[Code %s -- include it in a bug report]]"
@@ -573,6 +579,9 @@ msgid_plural "Down:  %1$s now,  %2$s total,  %3$llu packets"
 msgstr[0] "[[Down:  %1$s now,  %2$s total,  %3$llu packet]]"
 msgstr[1] "[[Down:  %1$s now,  %2$s total,  %3$llu packets]]"
 
+msgid "Downloading the host's build..."
+msgstr "[[Downloading the host's build...]]"
+
 msgid "Downloading the host's world"
 msgstr "[[Downloading the host's world]]"
 
@@ -588,6 +597,9 @@ msgstr "[[Dream]]"
 
 msgid "Duplicate settings with different values"
 msgstr "[[Duplicate settings with different values]]"
+
+msgid "Each player gets hungry slower the more players are in the game (about three quarters of the normal rate for two players, just over half for four, two fifths for eight), so a large group does not need a matching mountain of food. Stamina and sleep are unchanged. Off by default."
+msgstr "[[Each player gets hungry slower the more players are in the game (about three quarters of the normal rate for two players, just over half for four, two fifths for eight), so a large group does not need a matching mountain of food. Stamina and sleep are unchanged. Off by default.]]"
 
 msgid "Each surface picks its own family; applies on the next frame."
 msgstr "[[Each surface picks its own family; applies on the next frame.]]"
@@ -657,11 +669,21 @@ msgstr ""
 msgid "Host game"
 msgstr "[[Host game]]"
 
+#, c-format
+msgid "Host identity: %s"
+msgstr "[[Host identity: %s]]"
+
 msgid "Host tools"
 msgstr "[[Host tools]]"
 
 msgid "ID"
 msgstr "[[ID]]"
+
+msgid "Install"
+msgstr "[[Install]]"
+
+msgid "Install, and always trust this host"
+msgstr "[[Install, and always trust this host]]"
 
 msgid "Interface"
 msgstr "[[Interface]]"
@@ -697,11 +719,17 @@ msgstr "[[Last seen: %ds ago]]"
 msgid "Left the session."
 msgstr "[[Left the session.]]"
 
+msgid "Let players put videos on TVs"
+msgstr "[[Let players put videos on TVs]]"
+
 msgid "Let players use cheats"
 msgstr "[[Let players use cheats]]"
 
 msgid "Let players whose Multivoid build differs from this server's join -- an unofficial build when this server runs the official one, the official build when this server runs a modified one. Applies to the next joins; players already in stay."
 msgstr "[[Let players whose Multivoid build differs from this server's join -- an unofficial build when this server runs the official one, the official build when this server runs a modified one. Applies to the next joins; players already in stay.]]"
+
+msgid "Let the players in this game put video links on TVs and pause or seek them. Off: only the host's links and controls reach everyone. On by default."
+msgstr "[[Let the players in this game put video links on TVs and pause or seek them. Off: only the host's links and controls reach everyone. On by default.]]"
 
 msgid "Let the players in this game use the host's cheat tools: spawn items, add or remove points and trigger events. Their requests are sent to the host, which checks and runs each one; the host's own tools are always its own. Off by default."
 msgstr "[[Let the players in this game use the host's cheat tools: spawn items, add or remove points and trigger events. Their requests are sent to the host, which checks and runs each one; the host's own tools are always its own. Off by default.]]"
@@ -824,6 +852,9 @@ msgstr "[[Nickname color: applied (synced to other players)]]"
 
 msgid "Nickname color: reset to default"
 msgstr "[[Nickname color: reset to default]]"
+
+msgid "No"
+msgstr "[[No]]"
 
 msgid "No active session."
 msgstr "[[No active session.]]"
@@ -1208,6 +1239,9 @@ msgstr "[[Skins]]"
 msgid "Skins come from converter .pak files under Content/Paks/LogicMods (any subfolder). One pak may carry several skins -- the four scientists ship together in scientists.pak."
 msgstr "[[Skins come from converter .pak files under Content/Paks/LogicMods (any subfolder). One pak may carry several skins -- the four scientists ship together in scientists.pak.]]"
 
+msgid "Slower hunger in larger groups"
+msgstr "[[Slower hunger in larger groups]]"
+
 msgid "Snow"
 msgstr "[[Snow]]"
 
@@ -1260,6 +1294,39 @@ msgstr "[[Story]]"
 
 msgid "Sun position"
 msgstr "[[Sun position]]"
+
+msgid "THE HOST'S BUILD"
+msgstr "[[THE HOST'S BUILD]]"
+
+msgid "TV: a player's YouTube link could not be played here."
+msgstr "[[TV: a player's YouTube link could not be played here.]]"
+
+msgid "TV: a player's video link was not played here. This save's Custom Content rule is off."
+msgstr "[[TV: a player's video link was not played here. This save's Custom Content rule is off.]]"
+
+msgid "TV: every media channel is in use, so the link was not played."
+msgstr "[[TV: every media channel is in use, so the link was not played.]]"
+
+msgid "TV: getting the video from YouTube..."
+msgstr "[[TV: getting the video from YouTube...]]"
+
+msgid "TV: that link cannot be used. It must be an http or https address with no spaces or quotes."
+msgstr "[[TV: that link cannot be used. It must be an http or https address with no spaces or quotes.]]"
+
+msgid "TV: that link is too long to share, so it plays on your screen only."
+msgstr "[[TV: that link is too long to share, so it plays on your screen only.]]"
+
+msgid "TV: the YouTube link could not be played. The reason is in multivoid.log."
+msgstr "[[TV: the YouTube link could not be played. The reason is in multivoid.log.]]"
+
+msgid "TV: the host has turned off video links from players."
+msgstr "[[TV: the host has turned off video links from players.]]"
+
+msgid "TV: this install has no yt-dlp, so a YouTube link cannot play."
+msgstr "[[TV: this install has no yt-dlp, so a YouTube link cannot play.]]"
+
+msgid "TV: this set has no power, so the link was not played."
+msgstr "[[TV: this set has no power, so the link was not played.]]"
 
 msgid "Takes effect at the next session."
 msgstr "[[Takes effect at the next session.]]"
@@ -1455,6 +1522,12 @@ msgstr "[[The host was busy, and this connection was the slowest to prove itself
 msgid "The host will run that kerfur command in a moment."
 msgstr "[[The host will run that kerfur command in a moment.]]"
 
+msgid "The host's build is installed. Quit the game and start it again, then join this host. Your previous build is kept beside it as main.dll.old."
+msgstr "[[The host's build is installed. Quit the game and start it again, then join this host. Your previous build is kept beside it as main.dll.old.]]"
+
+msgid "The host's build was not installed. Your own build is unchanged."
+msgstr "[[The host's build was not installed. Your own build is unchanged.]]"
+
 msgid "The host's game cannot spawn that item."
 msgstr "[[The host's game cannot spawn that item.]]"
 
@@ -1514,6 +1587,13 @@ msgstr "[[This Multivoid (b%1$s) is made for VOTV %2$s. Your game is VOTV %3$s, 
 #, c-format
 msgid "This Multivoid (b%1$s) is made for VOTV %2$s. Your game is a version it has not been tested on."
 msgstr "[[This Multivoid (b%1$s) is made for VOTV %2$s. Your game is a version it has not been tested on.]]"
+
+#, c-format
+msgid "This host runs a different Multivoid build (b%1$d, %2$s). Your game can download it from the host (%3$.0f MB) and use it from the next start of the game. Your current build is kept."
+msgstr "[[This host runs a different Multivoid build (b%1$d, %2$s). Your game can download it from the host (%3$.0f MB) and use it from the next start of the game. Your current build is kept.]]"
+
+msgid "This is NOT an official release. It is whatever this host built, and it will run on your PC with full access. Accept it only from someone you trust."
+msgstr "[[This is NOT an official release. It is whatever this host built, and it will run on your PC with full access. Accept it only from someone you trust.]]"
 
 msgid "This key holds your body skin -- if the winning value is not the one you expect, keep the other line."
 msgstr "[[This key holds your body skin -- if the winning value is not the one you expect, keep the other line.]]"
