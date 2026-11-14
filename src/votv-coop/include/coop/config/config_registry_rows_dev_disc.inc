@@ -35,6 +35,9 @@ CFG_STRING(media_url_probe, "media_url_probe", "dev", "", "VOTVCOOP_MEDIA_URL_PR
 CFG_FLAG(starter_suitcase_every_join, "starter_suitcase_every_join", "dev", false, "VOTVCOOP_STARTER_SUITCASE_EVERY_JOIN",
     "Drill aid (host): every join is given a starter suitcase, not a first join only, so a rig whose client "
     "has joined the save before can test the lane.")
+CFG_FLAG(boar_hit_drill, "boar_hit_drill", "dev", false, "VOTVCOOP_BOAR_HIT_DRILL",
+    "Drill (BOTH peers): the host spawns a gray boar in front of the client, the client takes an axe and swings at "
+    "its copy; the host's boar must lose health to judged hits. One `[BOAR-HIT-DRILL] [H] PASS` or `FAIL` line.")
 CFG_FLAG(suitcase_probe, "suitcase_probe", "dev", false, "VOTVCOOP_SUITCASE_PROBE",
     "Probe (either peer): prints the starter suitcase class's loot members and contents, for its defaults and "
     "every suitcase of the world, then spawns one in front of the player and prints it five seconds on. "
