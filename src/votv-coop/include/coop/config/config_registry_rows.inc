@@ -288,6 +288,12 @@ CFG_FLAG(net_starter_suitcase, "net.starter_suitcase", "net", true, "VOTVCOOP_NE
 CFG_INT(net_second_atv_players, "net.second_atv_players", "net", 5, 0, 8, "VOTVCOOP_NET_SECOND_ATV_PLAYERS",
     "Host: once this many players stand in the world and it holds one ATV, a second ATV is spawned beside "
     "the first (an ATV carries four). 0: never.")
+CFG_FLAG(net_hunger_shared, "net.hunger_shared", "net", false, "VOTVCOOP_NET_HUNGER_SHARED",
+    L10N_MARK("Each player gets hungry slower the more players are in the game (about three quarters of the normal "
+    "rate for two players, just over half for four, two fifths for eight), so a large group does not need a "
+    "matching mountain of food. Stamina and sleep are unchanged. Off by default."))
+CFG_ROWFLAGS(net_hunger_shared, kRowServer | kRowReplicated | kRowLive | kRowNotify)
+CFG_LABEL(net_hunger_shared, L10N_MARK("Slower hunger in larger groups"))
 CFG_FLAG(net_share_build, "net.share_build", "net", true, "VOTVCOOP_NET_SHARE_BUILD",
     "Host: offer this game's Multivoid build to a joiner whose own differs, and send it when the joiner asks. "
     "0: a joiner on another build is refused as before.")

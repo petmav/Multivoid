@@ -7,6 +7,7 @@
 #include "coop/interactables/atv_fleet.h"
 #include "coop/interactables/tv_link_sync.h"
 #include "coop/net/build_share.h"
+#include "coop/player/hunger_share.h"
 #include "coop/net/session.h"
 #include "coop/props/fireext_thrust_sync.h"
 #include "coop/props/starter_suitcase.h"
@@ -25,6 +26,7 @@ void Install(coop::net::Session& session) {
 
 void Tick(coop::net::Session& session, bool isHost) {
     coop::tv_link_sync::Tick();  // a link that waits for its set (returns at once when none does)
+    coop::hunger_share::Tick(&session);  // the host's hunger rule on this peer's own player, once a second
     if (!isHost) return;
     namespace PP = coop::dev::perf_probe;
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:trash_fling"}; coop::trash_fling_sync::Tick(&session); }  // the props the trash prank flung
@@ -46,6 +48,7 @@ void OnDisconnect() {
     coop::starter_suitcase::OnDisconnect();  // the suitcases still owed
     coop::atv_fleet::OnDisconnect();  // the session's ATV check starts over
     coop::net::build_share::OnDisconnect();  // a build exchange in flight is over
+    coop::hunger_share::OnDisconnect();  // this player's hunger rate is the game's again
 }
 
 }  // namespace coop::event_lanes
