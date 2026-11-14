@@ -2,6 +2,7 @@
 
 #include "coop/world/event_lanes.h"
 
+#include "coop/net/build_share.h"
 #include "coop/net/session.h"
 
 namespace coop::event_lanes {
@@ -14,6 +15,7 @@ void Tick(coop::net::Session& session, bool isHost) {
 }
 
 void OnDisconnect() {
+    coop::net::build_share::OnDisconnect();  // a build exchange in flight is over
 }
 
 }  // namespace coop::event_lanes
