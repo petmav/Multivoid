@@ -32,7 +32,9 @@ namespace cw = coop::props::container_slice_wire;
 namespace ct = coop::props::container_target;
 using Items = std::vector<ue_wrap::inventory_item::Item>;
 
-constexpr uint64_t kPollMs  = 500;    // the host reads its trunks this often; a change goes at the next read
+// The host reads its trunks this often; a change goes at the next read. A read copies and hashes every entry
+// (about 1.5 ms for a filled trunk), so it is once a second.
+constexpr uint64_t kPollMs  = 1000;
 constexpr uint64_t kSweepMs = 1000;   // a client drops a half-assembled blob this long after its last chunk
 constexpr size_t   kMaxHeld = 32;     // blobs a client holds for ATVs it has not got (a host's word is bounded by its ATVs)
 constexpr int      kTagAddAsObject = 0x41545431;   // "ATT1"
