@@ -64,7 +64,7 @@ constexpr uint8_t kNoSeat = 0xFF;
 
 // The passenger seats: the table's width is the wire's and the engine wrapper's, and one more than the other players of a full session.
 constexpr int kPassengerSeats = coop::net::kAtvPassengerSeats;
-static_assert(kPassengerSeats == coop::players::kMaxPeers - 1, "an ATV seats every other player of a full session");
+static_assert(kPassengerSeats <= coop::players::kMaxPeers - 1, "the passenger seats never outnumber the other players of a full session; a request beyond them is refused Full");
 static_assert(kPassengerSeats == ue_wrap::atv_passenger::kSeats, "the wire and the wrapper agree on the seat count");
 static_assert(sizeof(coop::atv_sync::AtvEntry::passengerSlot) == kPassengerSeats, "the entry's table is the wire's width");
 // A rider whose claimed position is this far from its seat for this long is not on the ATV any more: the host takes it

@@ -40,7 +40,7 @@ void OnTakeover(const coop::net::AtvTakeoverPayload& p, uint8_t slot);
 
 // HOST: a client's AtvPassengerRequest (board or leave a passenger seat), from sender `slot` (1..kMaxPeers-1, checked by the
 // dispatch). The sender's world ready, the ATV known, the request well formed, a leave from a rider, then a board: the
-// sender alive and with a body, a pace, seated nowhere else (as driver or passenger), a seat free, within reach. Every
+// sender alive and with a body, a pace, seated nowhere else (as driver or passenger), a seat free (an ATV has three, so a fourth rider is answered Full), within reach. Every
 // judged request is answered with AtvPassengerAnswer carrying the seat the sender holds on that ATV after it; a request from a
 // slot whose world is not ready alone is counted and not answered.
 void OnPassengerRequest(const coop::net::AtvPassengerRequestPayload& p, uint8_t slot);
