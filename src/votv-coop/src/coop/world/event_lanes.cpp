@@ -6,6 +6,7 @@
 #include "coop/dev/perf_probe.h"
 #include "coop/interactables/atv_fleet.h"
 #include "coop/interactables/tv_link_sync.h"
+#include "coop/net/build_share.h"
 #include "coop/net/session.h"
 #include "coop/props/fireext_thrust_sync.h"
 #include "coop/props/starter_suitcase.h"
@@ -44,6 +45,7 @@ void OnDisconnect() {
     coop::tv_link_sync::OnDisconnect();  // the parked links and each set's last address
     coop::starter_suitcase::OnDisconnect();  // the suitcases still owed
     coop::atv_fleet::OnDisconnect();  // the session's ATV check starts over
+    coop::net::build_share::OnDisconnect();  // a build exchange in flight is over
 }
 
 }  // namespace coop::event_lanes

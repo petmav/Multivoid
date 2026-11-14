@@ -36,7 +36,13 @@ peer on 287 cannot join one on 288.
 
 Build 288 also added the `AtvPartIntent` kind and the battery's charge on `AtvState` (a client's work on an ATV's wheels, spare
 and battery, [vehicles.md](vehicles.md)), and the `OvenProgressState` kind (the screws and the lid of an oven's repair,
-[devices.md](devices.md)).
+[devices.md](devices.md)), and the `TvLink` kind (a web video on a television, [tv-links.md](tv-links.md)).
+
+Build 289 raised the player cap to eight and widened the per-player acknowledgement arrays of the power panel, power grid
+and fuse tower messages, so a peer on 288 cannot join one on 289.
+
+From build 289 a joiner whose build differs from the host's can take the host's over the connection
+([build-sharing.md](build-sharing.md)); the exchange's own frames do not change with the build number.
 
 An unofficial build -- any `main.dll` without its release signature -- shows `(unofficial build)`
 after the version. A host refuses a player on a build of the other kind -- an unofficial build on an

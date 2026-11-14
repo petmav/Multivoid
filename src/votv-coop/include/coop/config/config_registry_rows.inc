@@ -288,6 +288,13 @@ CFG_FLAG(net_starter_suitcase, "net.starter_suitcase", "net", true, "VOTVCOOP_NE
 CFG_INT(net_second_atv_players, "net.second_atv_players", "net", 5, 0, 8, "VOTVCOOP_NET_SECOND_ATV_PLAYERS",
     "Host: once this many players stand in the world and it holds one ATV, a second ATV is spawned beside "
     "the first (an ATV carries four). 0: never.")
+CFG_FLAG(net_share_build, "net.share_build", "net", true, "VOTVCOOP_NET_SHARE_BUILD",
+    "Host: offer this game's Multivoid build to a joiner whose own differs, and send it when the joiner asks. "
+    "0: a joiner on another build is refused as before.")
+CFG_ENUM(net_build_updates, "net.build_updates", "net", "ask", "ask|trusted|off", "VOTVCOOP_NET_BUILD_UPDATES",
+    "When a host runs another Multivoid build: ask = offer to download it from the host and install it (an "
+    "official release and a host you have trusted install without asking), trusted = only those two, never "
+    "ask, off = never take a build from a host.")
 CFG_FLAG(net_tv_links_players, "net.tv_links_players", "net", true, "VOTVCOOP_NET_TV_LINKS_PLAYERS",
     L10N_MARK("Let the players in this game put video links on TVs and pause or seek them. Off: only the host's "
     "links and controls reach everyone. On by default."))

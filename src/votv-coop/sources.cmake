@@ -367,6 +367,7 @@ set(VOTVCOOP_SOURCES
     src/coop/element/portable_identity.cpp
     src/ue_wrap/core/component_calls.cpp
     src/coop/net/peer_admission.cpp
+    src/coop/net/build_share.cpp
     src/coop/net/peer_admission_selftest.cpp
     src/coop/net/end_reason.cpp
     src/coop/net/connect_history.cpp
@@ -600,6 +601,7 @@ set(VOTVCOOP_SOURCES
     src/ui/game_build_dialog.cpp
     src/ui/config_review_panel.cpp
     src/ui/end_reason_dialog.cpp
+    src/ui/build_update_dialog.cpp
     src/ui/menu_sfx.cpp
     src/ui/host_save_picker.cpp
     src/ui/loading_screen.cpp
