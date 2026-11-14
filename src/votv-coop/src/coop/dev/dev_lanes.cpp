@@ -144,6 +144,7 @@
 #include "coop/dev/event_fire_drill.h"  // [dev] the host fires one named event and the run watches it
 #include "coop/dev/media_url_probe.h"  // [dev] the game's media player is handed a web address
 #include "coop/dev/tv_link_drill.h"  // [dev] a web video on a television, host to client
+#include "coop/dev/suitcase_probe.h"  // [dev] what fills the starter suitcase
 #include "coop/dev/disc_eject_drill.h"  // [dev] a disc edited in the PC and ejected, read on both peers
 #include "coop/dev/food_sleep_drill.h"  // [dev] an eat's sleep gain on each peer's own player
 #include "coop/dev/oven_progress_drill.h"  // [dev] the oven's screws and lid raised on one screen, read on the other
@@ -387,6 +388,7 @@ void TickDrills(coop::net::Session& session) {
     coop::dev::event_fire_drill::Tick(&session);  // [dev] the named-event fire (a single read when off)
     coop::dev::media_url_probe::Tick();  // [dev] the media player address probe (a single read when off)
     coop::dev::tv_link_drill::Tick(&session);  // [dev] the television link drill (a single read when off)
+    coop::dev::suitcase_probe::Tick();  // [dev] the starter suitcase probe (a single read when off)
     coop::dev::disc_eject_drill::Tick(&session);  // [dev] the PC eject drill (a single read when off)
     coop::dev::food_sleep_drill::Tick(&session);  // [dev] the eat sleep-gain drill (a single read when off)
     coop::dev::oven_progress_drill::Tick(&session);  // [dev] the oven screen drill (a single read when off)

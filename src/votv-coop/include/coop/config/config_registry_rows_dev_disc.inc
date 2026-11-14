@@ -32,6 +32,13 @@ CFG_STRING(media_url_probe, "media_url_probe", "dev", "", "VOTVCOOP_MEDIA_URL_PR
     "Probe (either peer): web addresses, `|` between them. Twenty seconds after the world is up the gamemode's "
     "sixteenth media channel is asked to open each in turn, and the player is read once a second for 25 "
     "seconds. Lines tagged [MEDIA-URL-PROBE]; each address ends PLAYED or NOT-PLAYED.")
+CFG_FLAG(starter_suitcase_every_join, "starter_suitcase_every_join", "dev", false, "VOTVCOOP_STARTER_SUITCASE_EVERY_JOIN",
+    "Drill aid (host): every join is given a starter suitcase, not a first join only, so a rig whose client "
+    "has joined the save before can test the lane.")
+CFG_FLAG(suitcase_probe, "suitcase_probe", "dev", false, "VOTVCOOP_SUITCASE_PROBE",
+    "Probe (either peer): prints the starter suitcase class's loot members and contents, for its defaults and "
+    "every suitcase of the world, then spawns one in front of the player and prints it five seconds on. "
+    "Lines tagged [SUITCASE-PROBE].")
 CFG_STRING(tv_link_drill, "tv_link_drill", "dev", "", "VOTVCOOP_TV_LINK_DRILL", false,
     "Drill (BOTH peers): a web address. Each peer powers the televisions of its world; the host spawns a set when "
     "the save holds none and asks it for the address through the TV link lane; each peer reads its set's play "

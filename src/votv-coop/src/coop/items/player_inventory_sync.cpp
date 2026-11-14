@@ -11,6 +11,7 @@
 #include "coop/save/save_scratch.h"  // IsScratch: the join capture is not the hosted world saved
 #include "coop/net/protocol.h"
 #include "coop/net/session.h"
+#include "coop/props/starter_suitcase.h"  // a first join's suitcase
 #include "coop/session/player_handshake.h"
 #include "ue_wrap/actors/effects.h"  // RemovePlayerEffectRecords, the host's effects out of the joiner's save
 #include "ue_wrap/engine/engine.h"      // SetSaveObjectReadyHook, the pre-materialise apply point
@@ -555,6 +556,7 @@ bool SendInventoryToSlot(int peerSlot) {
     coop::player_profile::Profile parsed;
     const bool usable = found == PS::Found::Yes && coop::inventory_wire::Deserialize(blob, parsed);
     if (!usable && found != PS::Found::Absent) PS::Quarantine(guid);
+    coop::starter_suitcase::NoteReturning(peerSlot);  // whatever the slot's last joiner was owed is not this one's
     if (!usable) {
         // First join (nothing held and no stored file), or the quarantined case above: a profile
         // with no record, which the joiner applies as a new game's player (the game's own starting
@@ -565,6 +567,9 @@ bool SendInventoryToSlot(int peerSlot) {
         first.hasVitals = ue_wrap::vitals::ReadDefaults(first.vitals);  // else the joiner reads its own
         blob = coop::inventory_wire::Serialize(first);
         UE_LOGI("player_inventory: slot %d guid=%s -- first join, a new game's player", peerSlot, guid.c_str());
+        if (found == PS::Found::Absent) coop::starter_suitcase::NoteFirstJoin(peerSlot);  // their own suitcase
+    } else if (coop::config::ResolveFlag(::coop::config_registry::rows::starter_suitcase_every_join)) {
+        coop::starter_suitcase::NoteFirstJoin(peerSlot);  // [dev] the drill's returning client
     }
     const std::vector<std::vector<uint8_t>> parts =
         coop::inventory_wire::SplitParts(blob, coop::blob_chunks::MaxBlobBytes(), ++g_hostPartGroup[peerSlot]);

@@ -135,6 +135,7 @@ set(VOTVCOOP_SOURCES
     src/coop/world/fuse_tower_kind.cpp
     src/coop/interactables/atv_sync.cpp
     src/coop/interactables/atv_trunk_sync.cpp
+    src/coop/interactables/atv_fleet.cpp
     src/coop/interactables/atv_stream_gates.cpp
     src/coop/interactables/atv_authority.cpp
     src/coop/interactables/atv_body.cpp
@@ -268,6 +269,7 @@ set(VOTVCOOP_SOURCES
     src/coop/props/prop_food_state.cpp
     src/coop/world/vent_crawler_sync.cpp
     src/coop/props/prop_food_sync.cpp
+    src/coop/props/starter_suitcase.cpp
     src/coop/props/food_tick_gate.cpp
     src/ue_wrap/actors/food.cpp
     src/coop/world/plant_sync.cpp

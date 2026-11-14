@@ -28,6 +28,7 @@
 #include "coop/save/save_scratch.h"
 #include "coop/save/save_transfer.h"
 #include "coop/dev/spawn_menu_unlock.h"
+#include "coop/dev/suitcase_probe.h"
 #include "coop/dev/spawn_npc.h"
 #include "coop/dev/world_first_check.h"
 #include "coop/session/teleport_client.h"
@@ -462,6 +463,7 @@ DWORD WINAPI TimelineThread(LPVOID param) {
     } else if (scenario == "newgame") {
         ::Sleep(5000);
         Post([] { Report("post-shot"); });
+        Post([] { coop::dev::suitcase_probe::DescribeWorld(); });  // [dev] nothing unless suitcase_probe=1
         UE_LOGI("harness: ==== AUTONOMOUS NEWGAME TIMELINE DONE ====");
     } else if (scenario == "menu") {
         // The native launch (no test env, so the scenario defaults to menu): VOTV's own main menu,

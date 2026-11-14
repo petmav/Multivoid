@@ -4,9 +4,11 @@
 
 #include "coop/creatures/boar_sync.h"
 #include "coop/dev/perf_probe.h"
+#include "coop/interactables/atv_fleet.h"
 #include "coop/interactables/tv_link_sync.h"
 #include "coop/net/session.h"
 #include "coop/props/fireext_thrust_sync.h"
+#include "coop/props/starter_suitcase.h"
 #include "coop/world/agrav_sync.h"
 #include "coop/world/copy_graph_gate.h"
 #include "coop/world/obelisk_copy.h"
@@ -28,6 +30,8 @@ void Tick(coop::net::Session& session, bool isHost) {
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:agrav"}; coop::agrav_sync::Tick(&session); }  // the props the anti-gravity event lifts
     { PP::Scope _s{PP::Bucket::Interactable}; ue_wrap::ScopedWalkTimer _w{"sync:boar"}; coop::boar_sync::Tick(&session); }  // the gray boars the gamemode lists
     coop::fireext_thrust_sync::Tick(&session);  // an extinguisher in runaway thrust (returns at once when none is)
+    coop::starter_suitcase::Tick(&session);  // a first joiner's own suitcase (returns at once when none is owed)
+    coop::atv_fleet::Tick(&session);  // a second ATV for a large session (one check every five seconds)
 }
 
 void OnDisconnect() {
@@ -38,6 +42,8 @@ void OnDisconnect() {
     coop::copy_graph_gate::OnDisconnect();  // what a client's copies were refused
     coop::obelisk_copy::OnDisconnect();  // the spawn hook disarmed
     coop::tv_link_sync::OnDisconnect();  // the parked links and each set's last address
+    coop::starter_suitcase::OnDisconnect();  // the suitcases still owed
+    coop::atv_fleet::OnDisconnect();  // the session's ATV check starts over
 }
 
 }  // namespace coop::event_lanes

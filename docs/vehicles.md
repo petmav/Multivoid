@@ -51,8 +51,13 @@ two-peer run has judged it yet.
 
 ### The passenger seats
 
-The game's ATV seats one player, and sitting possesses the rig. A full session is four players, so the mod adds
-three passenger seats (`coop/interactables/atv_passenger`, `ue_wrap/devices/atv_passenger`). A passenger does not
+The game's ATV seats one player, and sitting possesses the rig. A session holds up to eight players, and the mod adds
+three passenger seats (`coop/interactables/atv_passenger`, `ue_wrap/devices/atv_passenger`), so an ATV carries a driver
+and three passengers and a fourth would-be passenger is refused as full. Once `net.second_atv_players` players
+(5 by default; 0 for never) stand in the host's world and it holds one `ATV_C`, the host spawns a second beside the
+first, at the first of eight spots around it with a clear line and ground (`coop/interactables/atv_fleet`); it
+reaches the clients as any runtime ATV does and stays in the host's save `[V]`: a two-peer run with the
+threshold at 2 -- the host spawned it and the client made its mirror. A passenger does not
 possess anything: its own player stays possessed and is attached to the rig's root body at a seat, its movement mode
 None so no key moves it, its collision off so it cannot push the rig, its camera and mouse-look its own, and the
 driver's controls untouched. The engine moves an attached body with the rig each frame, so a passenger rides it
