@@ -276,6 +276,7 @@ set(VOTVCOOP_DEV_SOURCES
     src/coop/dev/fireext_drill.cpp
     src/coop/dev/oven_progress_drill.cpp
     src/coop/dev/disc_eject_drill.cpp
+    src/coop/dev/event_fire_drill.cpp
     src/coop/dev/food_sleep_drill.cpp
     src/coop/dev/pried_drill.cpp
     src/coop/dev/pry_drill.cpp

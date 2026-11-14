@@ -141,6 +141,7 @@
 #include "coop/dev/host_settle_drill.h"  // [dev] a join in the host's start-up waits for it
 #include "coop/dev/impact_damage_probe.h"  // [dev] what impactDamage receives, logged per call
 #include "coop/dev/prop_birth_key_probe.h"  // the place/birth seam's key timing and drain exits
+#include "coop/dev/event_fire_drill.h"  // [dev] the host fires one named event and the run watches it
 #include "coop/dev/disc_eject_drill.h"  // [dev] a disc edited in the PC and ejected, read on both peers
 #include "coop/dev/food_sleep_drill.h"  // [dev] an eat's sleep gain on each peer's own player
 #include "coop/dev/oven_progress_drill.h"  // [dev] the oven's screws and lid raised on one screen, read on the other
@@ -314,6 +315,7 @@ void EndSession() {
     coop::dev::pry_drill::OnDisconnect();  // [dev] back to the first step, the watch emptied
     coop::dev::pried_drill::OnDisconnect();  // [dev] back to the first step
     coop::dev::desk_panel_drill::OnDisconnect();  // [dev] back to the first step
+    coop::dev::event_fire_drill::OnDisconnect();  // [dev] back to the first step
     coop::dev::disc_eject_drill::OnDisconnect();  // [dev] back to the first step
     coop::dev::food_sleep_drill::OnDisconnect();  // [dev] back to the first step
     coop::dev::oven_progress_drill::OnDisconnect();  // [dev] back to the first step
@@ -379,6 +381,7 @@ void TickDrills(coop::net::Session& session) {
     coop::dev::pry_drill::Tick(&session);  // [dev] the pry drill (a single read when off)
     coop::dev::pried_drill::Tick(&session);  // [dev] the pried-prop drill (a single read when off)
     coop::dev::desk_panel_drill::Tick(&session);  // [dev] the desk back-panel drill (a single read when off)
+    coop::dev::event_fire_drill::Tick(&session);  // [dev] the named-event fire (a single read when off)
     coop::dev::disc_eject_drill::Tick(&session);  // [dev] the PC eject drill (a single read when off)
     coop::dev::food_sleep_drill::Tick(&session);  // [dev] the eat sleep-gain drill (a single read when off)
     coop::dev::oven_progress_drill::Tick(&session);  // [dev] the oven screen drill (a single read when off)
