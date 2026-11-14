@@ -57,6 +57,13 @@ const RuleField* NthOfKind(const std::vector<RuleField>& rules, Kind kind, int n
 // struct: no snapshot, no allocation. -1 while the GameInstance or its rules struct is not resolvable. Game thread.
 int ReadDifficulty();
 
+// The process copy's Custom Content rule: 1, 0, or -1 while the rules are not resolvable. While it is off the
+// game's television and radio refuse a player's own files and web addresses (lib_C::isCustom). Game thread.
+int ReadCustomContent();
+
+// Drill aid: write that rule in the process copy. False while the rules are not resolvable. Game thread.
+bool ForceCustomContent(bool on);
+
 // Put the save's rules in force: copy `metadata.rules` (a save_metadata_C) over
 // `gameInstance.gameRules`, as the game's slot menu does on the way into a world, and BEFORE the
 // travel: difficulty, fall damage, water fall damage, nightmares and the grass rule are latched on a

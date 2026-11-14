@@ -198,6 +198,9 @@ CFG_INT(net_reliable_rate, "net.reliable_rate", "net", 8000, 0, 1000000, nullptr
 CFG_IDENTITY(player_skin, "player_skin", "player",
     "Persisted body-skin choice, rolled from the starter list on first launch. Change it "
     "in-game (F1 menu > skins).")
+CFG_FLAG(tv_links, "tv_links", "player", true, "VOTVCOOP_TV_LINKS",
+    "Play the web video links players put on a TV, and send yours. 0: your game opens no address another "
+    "player chose and sends none (restart the game after changing).")
 CFG_FLAG(nameplate, "nameplate", "player", true, nullptr,
     "Show nameplates over other players (also toggleable in the F1 menu).")
 CFG_STRING(nick_color, "nick_color", "player", "unset", nullptr, false,
@@ -273,6 +276,11 @@ CFG_FLAG(net_allow_other_builds, "net.allow_other_builds", "net", false, "VOTVCO
     "already in stay."))
 CFG_ROWFLAGS(net_allow_other_builds, kRowServer | kRowReplicated | kRowLive | kRowNotify)
 CFG_LABEL(net_allow_other_builds, L10N_MARK("Allow other builds"))
+CFG_FLAG(net_tv_links_players, "net.tv_links_players", "net", true, "VOTVCOOP_NET_TV_LINKS_PLAYERS",
+    L10N_MARK("Let the players in this game put video links on TVs and pause or seek them. Off: only the host's "
+    "links and controls reach everyone. On by default."))
+CFG_ROWFLAGS(net_tv_links_players, kRowServer | kRowReplicated | kRowLive | kRowNotify)
+CFG_LABEL(net_tv_links_players, L10N_MARK("Let players put videos on TVs"))
 CFG_INT(voice_jitter_threshold, "voice.jitter_threshold", "voice", 3, 0, 60, nullptr,
     "Jitter buffer: late-packet tolerance in frames before a reset.")
 CFG_INT(voice_prebuffer_frames, "voice.prebuffer_frames", "voice", 5, 0, 60, nullptr,
