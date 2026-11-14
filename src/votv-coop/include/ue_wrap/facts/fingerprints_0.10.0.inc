@@ -392,6 +392,7 @@ inline constexpr RefFn kRefFns[] = {
     {L"prop_drive_c", L"upd", L"prop_drive_c.upd", 0x6a2d5d90ab51fa2dull, 0x9e2f304a0a94ae72ull},
     {L"prop_driverack_c", L"receiveactorbeginoverlap", L"prop_driverack_c.receiveactorbeginoverlap", 0x21b3fbf6adea9c01ull, 0x1cd7c6591b6ae3dcull},
     {L"prop_dronesack_c", L"receivedestroyed", L"prop_dronesack_c.receivedestroyed", 0x6a2d5d90ab51fa2dull, 0xfacb28baa36e150cull},
+    {L"prop_fireext_c", L"shoot", L"prop_fireext_c.shoot", 0x6a2d5d90ab51fa2dull, 0xe2bec1cb455ac29aull},
     {L"prop_fish_c", L"receivetick", L"prop_fish_c.receivetick", 0x6082ffdfa2cda429ull, 0xa811dc4defd2939full},
     {L"prop_food_c", L"actionoptionindex", L"prop_food_c.actionoptionindex", 0x5a7351a33bbf62a6ull, 0x4edb4fc78b2dedeeull},
     {L"prop_food_c", L"receivetick", L"prop_food_c.receivetick", 0x6082ffdfa2cda429ull, 0xaba4de649373dfd1ull},

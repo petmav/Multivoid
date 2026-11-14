@@ -12,6 +12,7 @@
 #include "coop/props/prop_element_tracker.h"
 #include "coop/props/prop_key_index.h"  // a key on the wire to a live actor
 #include "coop/props/prop_pry_sync.h"  // a pried prop's state rides this lane's message
+#include "coop/props/prop_wire_parity.h"  // NoteCorrection: how far a let-go moves the copy
 #include "coop/props/remote_prop.h"
 #include "ue_wrap/engine/engine.h"
 #include "ue_wrap/engine/engine_physics.h"
@@ -420,6 +421,7 @@ bool FillFreedProp(coop::net::PropStickStatePayload& p, void* prop, std::wstring
 
 bool LetGoFrom(void* prop, const coop::net::PropStickStatePayload& p) {
     if (coop::remote_prop::IsOwnedHere(prop)) return false;
+    coop::prop_wire_parity::NoteCorrection(prop, ue_wrap::FVector{p.locX, p.locY, p.locZ}, "unstick-let-go");
     E::SetActorLocation(prop, ue_wrap::FVector{p.locX, p.locY, p.locZ});
     E::SetActorRotation(prop, ue_wrap::FRotator{p.rotPitch, p.rotYaw, p.rotRoll});
     if (void* mesh = ue_wrap::prop::GetStaticMesh(prop)) {

@@ -176,6 +176,7 @@ set(VOTVCOOP_SOURCES
     src/coop/world/obelisk_copy.cpp
     src/coop/world/ufo_shield_sync.cpp
     src/coop/creatures/boar_sync.cpp
+    src/coop/props/fireext_thrust_sync.cpp
     src/coop/world/trash_fling_sync.cpp
     src/coop/world/event_cue_sync.cpp
     src/coop/world/event_fire_policy.cpp

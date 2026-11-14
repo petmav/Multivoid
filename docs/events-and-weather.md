@@ -177,6 +177,18 @@ heart crosses as a prop; the Soltomia craft's copy runs no begin play, overlap o
 lanes carry what the host's does) and shows once an ATV stands on it `[V]`: the same drill fired `salt` and
 `soltoClean`, and the client logged each copy and the craft's refused begin play.
 
+The trash prank's flings are the host's: after each `trash` call the host coasts every prop the trasher's box
+threw and announces each clump it spawned (`coop/world/trash_fling_sync`) `[V]` (`trashBase`: the flung props
+streamed and the clumps reached the client within the second). A bed event replays on every peer, so each
+player's wake teleport is its own, and the bed it moves is the host's: a client's wake moves no bed, and the host
+streams its move (`coop/world/bed_event_gate`); a client's wake ran so in the drill, and the host's move of the bed
+was not reached `[RD]`. The insomniac is rolled on the host and mirrored with its graph parked
+(`ticker_insomniacSpawner_C` as a spawn source); it cannot be forced, so no run has shown one `[RD]`.
+
+The boar war's controller runs on the host alone. A boar is a prop with a brain: it crosses on the prop lane,
+the host claims every boar the gamemode lists into the driven-prop stream (`coop/creatures/boar_sync`), and a
+client's copy runs its begin play, its hover tick and its destroy and no other entry of its graph
+(`coop/world/copy_graph_gate`), so it decides nothing; a client's night boar spawner is refused. A client's
 
 The walking pyramid rides those rails for its spawn, pose and despawn, the creature lane for
 its four wisps, and the event lane for its identity; its own lane owns the one axis nothing

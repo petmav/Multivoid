@@ -86,6 +86,7 @@
 #include "coop/props/food_tick_gate.h"
 #include "coop/world/plant_gate.h"
 #include "coop/world/bed_event_gate.h"
+#include "coop/props/fireext_thrust_sync.h"
 #include "coop/world/copy_graph_gate.h"
 #include "coop/world/ufo_shield_sync.h"
 #include "coop/interactables/woodchipper_gate.h"
@@ -371,6 +372,7 @@ bool StartCoopSession(const coop::net::Config& netCfg, coop::net::Refusal* why) 
     coop::copy_graph_gate::Install();
     coop::ufo_shield_sync::Install(&g_session);
     // An extinguisher's runaway thrust is the host's: a client's copy is refused its own from the first frame.
+    coop::fireext_thrust_sync::Install(&g_session);
     // And a client's woodchippers: their tick and intake are refused from the world's first frame, and a player's pour
     // and press at one is asked of the host (the session it sends on is this one).
     coop::woodchipper_gate::Install(&g_session);
