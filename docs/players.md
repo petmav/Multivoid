@@ -206,7 +206,14 @@ holds the pawn's vitals (health, food, sleep, coffee and gasoline) and its inven
 player's own record as the game wrote it, a readable copy of the vitals, and the save object's
 own per-player fields (strength, the food tolerances); a first join has no record, so the host's
 leaves the joiner's save object and the player starts as a new game's does, with the game's own
-starting equipment. The profile also carries where the player stood: a first join starts from the game's own defaults at the start point (the KPP gate in a fresh game, day 0 to 2; beside the
+starting equipment. A first join also brings a starter suitcase of the player's own
+(`coop/props/starter_suitcase`, `net.starter_suitcase`): a new game's level holds one suitcase and seven loose
+items it gathers (a sign frame, two MREs, two batteries, the Kel plush, a toilet roll), which every joiner used to
+share, so once the first-time joiner stands in the world the host spawns a suitcase beside them and files the
+same seven items into it with the game's own spawn and put verbs `[V]`: a two-peer run with
+`VOTVCOOP_STARTER_SUITCASE_EVERY_JOIN=1` -- the host filed 7 of 7 items and the client read a second suitcase
+holding the seven; under a fresh identity and no switch, the host said first join and gave the suitcase. The
+profile also carries where the player stood: a first join starts from the game's own defaults at the start point (the KPP gate in a fresh game, day 0 to 2; beside the
 base's bed from day 3), a
 returning player gets their numbers back and appears at the last spot they were standing on
 (on the ground, not ragdolled, not seated: a position read while driving the ATV is not a place

@@ -279,6 +279,12 @@ CFG_FLAG(net_allow_player_cheats, "net.allow_player_cheats", "net", false, "VOTV
     "own. Off by default."))
 CFG_ROWFLAGS(net_allow_player_cheats, kRowServer | kRowReplicated | kRowLive | kRowNotify)
 CFG_LABEL(net_allow_player_cheats, L10N_MARK("Let players use cheats"))
+CFG_FLAG(net_starter_suitcase, "net.starter_suitcase", "net", true, "VOTVCOOP_NET_STARTER_SUITCASE",
+    "Host: a player's first join to this save brings a starter suitcase of their own, spawned beside them "
+    "with a new game's starting items. 0: joiners share the save's one suitcase.")
+CFG_INT(net_second_atv_players, "net.second_atv_players", "net", 5, 0, 8, "VOTVCOOP_NET_SECOND_ATV_PLAYERS",
+    "Host: once this many players stand in the world and it holds one ATV, a second ATV is spawned beside "
+    "the first (an ATV carries four). 0: never.")
 CFG_INT(voice_jitter_threshold, "voice.jitter_threshold", "voice", 3, 0, 60, nullptr,
     "Jitter buffer: late-packet tolerance in frames before a reset.")
 CFG_INT(voice_prebuffer_frames, "voice.prebuffer_frames", "voice", 5, 0, 60, nullptr,

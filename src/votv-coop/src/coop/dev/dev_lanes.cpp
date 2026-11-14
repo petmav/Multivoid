@@ -138,6 +138,7 @@
 #include "coop/dev/host_settle_drill.h"  // [dev] a join in the host's start-up waits for it
 #include "coop/dev/impact_damage_probe.h"  // [dev] what impactDamage receives, logged per call
 #include "coop/dev/prop_birth_key_probe.h"  // the place/birth seam's key timing and drain exits
+#include "coop/dev/suitcase_probe.h"  // [dev] what fills the starter suitcase
 #include "coop/dev/pry_drill.h"  // [dev] a stuck pryable pried off its wall, watched on both peers
 #include "coop/dev/recycled_slot_drill.h"  // [dev] a recycled object slot, staged on the local pawn
 #include "coop/dev/rng_roll_census.h"  // the dev roll census
@@ -363,6 +364,7 @@ void TickDrills(coop::net::Session& session) {
     coop::dev::keypad_drill::Tick(&session);  // [dev] the keypad drill's legs (a single bool read when off)
     coop::dev::fireext_drill::Tick(&session);  // [dev] the fire extinguisher drill (a single bool read when off)
     coop::dev::pry_drill::Tick(&session);  // [dev] the pry drill (a single read when off)
+    coop::dev::suitcase_probe::Tick();  // [dev] the starter suitcase probe (a single read when off)
     coop::dev::recycled_slot_drill::Tick();  // [dev] the recycled-slot drill (a single read when off)
     coop::dev::spawn_match_probe::Tick();  // [dev] periodic fuzzy-match totals (a single bool read when off)
     coop::dev::container_join_drill::Tick(&session);  // [dev] the container join drill (a single bool read when off)
