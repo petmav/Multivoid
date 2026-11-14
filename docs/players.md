@@ -206,7 +206,10 @@ holds the pawn's vitals (health, food, sleep, coffee and gasoline) and its inven
 player's own record as the game wrote it, a readable copy of the vitals, and the save object's
 own per-player fields (strength, the food tolerances); a first join has no record, so the host's
 leaves the joiner's save object and the player starts as a new game's does, with the game's own
-starting equipment. The profile also carries where the player stood: a first join starts from the game's own defaults at the start point (the KPP gate in a fresh game, day 0 to 2; beside the
+starting equipment. With the host's rule `net.hunger_shared` (Slower hunger in larger groups; off by default) each
+player's hunger runs at players^-0.44 of the game's rate, 74% for two and 40% for eight, written on each peer's own
+player through the game's own hunger multiplier (`coop/player/hunger_share`); stamina and sleep are untouched `[V]`:
+with the rule set on the host alone, host and client each logged 74% for two players. The profile also carries where the player stood: a first join starts from the game's own defaults at the start point (the KPP gate in a fresh game, day 0 to 2; beside the
 base's bed from day 3), a
 returning player gets their numbers back and appears at the last spot they were standing on
 (on the ground, not ragdolled, not seated: a position read while driving the ATV is not a place
