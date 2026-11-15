@@ -118,6 +118,7 @@ set(VOTVCOOP_DEV_SOURCES
     src/coop/dev/cremator_probe.cpp
     src/coop/dev/cremator_probe_host.cpp
     src/coop/dev/cremator_drill.cpp
+    src/coop/dev/cremator_drill_g1.cpp
     src/coop/dev/cremator_drill_g2.cpp
     src/coop/dev/hand_drop_census.cpp
     src/coop/dev/hand_drop_selftest.cpp
@@ -186,6 +187,7 @@ set(VOTVCOOP_DEV_SOURCES
     src/coop/dev/atv_health_drill_spawned.cpp
     src/coop/dev/atv_spawn_near.cpp
     src/coop/dev/atv_passenger_drill.cpp
+    src/coop/dev/atv_passenger_drill_host.cpp
     src/coop/dev/throw_drill.cpp
     src/coop/dev/log_drill.cpp
     src/coop/dev/server_upgrade_drill.cpp
