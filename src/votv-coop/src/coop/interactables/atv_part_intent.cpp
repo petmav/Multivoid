@@ -361,21 +361,26 @@ void OnIntent(coop::net::Session& session, const coop::net::AtvPartIntentPayload
     coop::element::IntentSubject subject{};
     coop::atv_sync::TableView view{};
     AC::Snapshot snap;
-    if (payload.op >= op::kOpCount || (wheelOp && payload.index >= kWheels) || !std::isfinite(payload.durability) ||
-        !std::isfinite(payload.dirt)) {
+    // A part-less op names no wheel, so its index is 0; Judge and Run shift by it.
+    if (payload.op >= op::kOpCount || (wheelOp ? payload.index >= kWheels : payload.index != 0) ||
+        !std::isfinite(payload.durability) || !std::isfinite(payload.dirt)) {
         why = "malformed";
-    } else if (!g_buckets[senderSlot].Take(kBudget, coop::atv_sync::NowMs())) {
-        why = "paced";
-    } else if (TakesHeldPart(payload.op)) {
-        const uint32_t handState = coop::hand_item::StatesApplied(senderSlot) + 1;
-        if (!coop::hand_item::LastHeldClassIs(senderSlot, payload.op == op::kInsertBattery ? kBatteryClass : kWheelClass))
-            why = "the sender's hand did not hold that part last";
-        else if (g_partTakenAt[senderSlot] == handState)
-            why = "the part in the sender's hand was given already";
-        else {
-            g_partTakenAt[senderSlot] = handState;
-            partOwed = true;
+    } else {
+        // The hand is judged before the pace: the client destroyed its part when it asked, so a paced
+        // ask that did carry a part owes it back. One part per hand state keeps a flood from minting more.
+        if (TakesHeldPart(payload.op)) {
+            const uint32_t handState = coop::hand_item::StatesApplied(senderSlot) + 1;
+            if (!coop::hand_item::LastHeldClassIs(senderSlot,
+                                                  payload.op == op::kInsertBattery ? kBatteryClass : kWheelClass))
+                why = "the sender's hand did not hold that part last";
+            else if (g_partTakenAt[senderSlot] == handState)
+                why = "the part in the sender's hand was given already";
+            else {
+                g_partTakenAt[senderSlot] = handState;
+                partOwed = true;
+            }
         }
+        if (!why && !g_buckets[senderSlot].Take(kBudget, coop::atv_sync::NowMs())) why = "paced";
     }
     if (!why) {
         if (!coop::atv_sync::ReadTable(key, view) || !view.actor) {
