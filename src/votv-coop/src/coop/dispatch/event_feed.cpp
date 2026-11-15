@@ -485,6 +485,7 @@ void Update(net::Session& session, void* localPlayer) {
             if (HandleRequesterFeedbackEvent(session, msg)) break;
             if (HandleCheatEvent(session, msg)) break;
             if (HandleAtvPartEvent(session, msg)) break;
+            if (HandleAtvSeatEvent(session, msg)) break;
             if (HandleKerfurCommandEvent(session, msg)) break;
             if (HandleEconomyEvent(session, msg, localPlayer)) break;
             if (HandlePropDriveEvent(session, msg)) break;

@@ -16,7 +16,6 @@
 #include "coop/player/hit_intent.h"  // CLIENT->HOST a swing that hit a creature's mirror
 #include "coop/creatures/kerfur_convert_host.h"
 #include "coop/creatures/roach_sync.h"    // CLIENT->HOST local roach consumption intent
-#include "coop/interactables/atv_authority.h"  // CLIENT->HOST an ATV seat or takeover request, judged by the host
 #include "coop/interactables/camera_toggle_intent.h"  // CLIENT->HOST use of a security camera, or its laptop light button
 #include "coop/interactables/door_verb_intent.h"  // CLIENT->HOST press, hit or pry of a base door
 #include "coop/interactables/sleepingbag_sync.h"  // CLIENT->HOST fold/unfold; HOST runs the source Blueprint
@@ -38,6 +37,11 @@
 #include "coop/props/remover_request.h"  // CLIENT->HOST the tool gun's remover; HOST->CLIENT its answer
 #include "coop/items/broom_stroke.h"
 #include "coop/world/explosion_request.h"  // CLIENT->HOST a shot and an explosion request, strictly checked and queued
+#include "coop/world/easter_hunt.h"  // CLIENT->HOST the Easter bunny's talk ends and eggs, on the salt rocket message
+#include "coop/world/basalt_pillar.h"  // CLIENT->HOST a dig of the buried basalt, on the salt rocket message
+#include "coop/world/level_fixture_sync.h"
+#include "coop/world/vending_sync.h"  // CLIENT->HOST a footprints show(), on the same message
+#include "coop/world/erie_sync.h"  // CLIENT->HOST a hit on the Erie plush by a prop of its quest, on the same message
 #include "coop/world/salt_rocket_ignite.h"  // CLIENT->HOST a light on a salt rocket, judged and performed on the host
 #include "coop/props/trash_channel.h"
 
@@ -473,70 +477,12 @@ bool HandleIntentEvent(net::Session& session,
             UE_LOGW("event_feed: PropIgniteIntent from invalid senderPeerSlot=%d -- dropping", msg.senderPeerSlot);
             break;
         }
+        if (::coop::basalt_pillar::TakeDigIntent(static_cast<int>(msg.senderPeerSlot), msg.payload, msg.payloadLen)) break;  // verb 2
+        if (::coop::level_fixture_sync::TakeIntent(static_cast<int>(msg.senderPeerSlot), msg.payload, msg.payloadLen)) break;  // verb 3
+        if (::coop::easter_hunt::TakeIntent(static_cast<int>(msg.senderPeerSlot), msg.payload, msg.payloadLen)) break;  // verbs 4 to 6
+        if (::coop::vending_sync::TakeIntent(static_cast<int>(msg.senderPeerSlot), msg.payload, msg.payloadLen)) break;  // verbs 10, 11
+        if (::coop::erie_sync::TakeIntent(static_cast<int>(msg.senderPeerSlot), msg.payload, msg.payloadLen)) break;  // verb 12
         coop::salt_rocket_ignite::OnIntentReceived(static_cast<int>(msg.senderPeerSlot), msg.payload, msg.payloadLen);
-        break;
-    }
-    case net::ReliableKind::AtvSeat: {
-        // CLIENT->HOST: this client's player sat in an ATV's driver seat or left it. The host judges the
-        // request and answers it (coop::atv_authority::OnSeat). Never relayed.
-        if (session.role() != net::Role::Host) {
-            UE_LOGW("event_feed: AtvSeat received on a client -- dropping");
-            break;
-        }
-        if (msg.senderPeerSlot < 1 || msg.senderPeerSlot >= net::kMaxPeers) {
-            UE_LOGW("event_feed: AtvSeat from invalid senderPeerSlot=%d -- dropping", msg.senderPeerSlot);
-            break;
-        }
-        if (msg.payloadLen < sizeof(net::AtvSeatPayload)) {
-            UE_LOGW("event_feed: AtvSeat payload too short (%zu < %zu)",
-                    static_cast<size_t>(msg.payloadLen), sizeof(net::AtvSeatPayload));
-            break;
-        }
-        net::AtvSeatPayload p{};
-        std::memcpy(&p, msg.payload, sizeof(p));
-        coop::atv_authority::OnSeat(p, static_cast<uint8_t>(msg.senderPeerSlot));
-        break;
-    }
-    case net::ReliableKind::AtvPassengerRequest: {
-        // CLIENT->HOST: this client's player boarded an ATV's passenger seats or left the one it holds. The host judges the
-        // request and answers it (coop::atv_authority::OnPassengerRequest). Never relayed.
-        if (session.role() != net::Role::Host) {
-            UE_LOGW("event_feed: AtvPassengerRequest received on a client -- dropping");
-            break;
-        }
-        if (msg.senderPeerSlot < 1 || msg.senderPeerSlot >= net::kMaxPeers) {
-            UE_LOGW("event_feed: AtvPassengerRequest from invalid senderPeerSlot=%d -- dropping", msg.senderPeerSlot);
-            break;
-        }
-        if (msg.payloadLen < sizeof(net::AtvPassengerRequestPayload)) {
-            UE_LOGW("event_feed: AtvPassengerRequest payload too short (%zu < %zu)",
-                    static_cast<size_t>(msg.payloadLen), sizeof(net::AtvPassengerRequestPayload));
-            break;
-        }
-        net::AtvPassengerRequestPayload p{};
-        std::memcpy(&p, msg.payload, sizeof(p));
-        coop::atv_authority::OnPassengerRequest(p, static_cast<uint8_t>(msg.senderPeerSlot));
-        break;
-    }
-    case net::ReliableKind::AtvTakeover: {
-        // CLIENT->HOST: this client's player took hold of an ATV with the grav hand. The host judges the
-        // request and answers it (coop::atv_authority::OnTakeover). Never relayed.
-        if (session.role() != net::Role::Host) {
-            UE_LOGW("event_feed: AtvTakeover received on a client -- dropping");
-            break;
-        }
-        if (msg.senderPeerSlot < 1 || msg.senderPeerSlot >= net::kMaxPeers) {
-            UE_LOGW("event_feed: AtvTakeover from invalid senderPeerSlot=%d -- dropping", msg.senderPeerSlot);
-            break;
-        }
-        if (msg.payloadLen < sizeof(net::AtvTakeoverPayload)) {
-            UE_LOGW("event_feed: AtvTakeover payload too short (%zu < %zu)",
-                    static_cast<size_t>(msg.payloadLen), sizeof(net::AtvTakeoverPayload));
-            break;
-        }
-        net::AtvTakeoverPayload p{};
-        std::memcpy(&p, msg.payload, sizeof(p));
-        coop::atv_authority::OnTakeover(p, static_cast<uint8_t>(msg.senderPeerSlot));
         break;
     }
     case net::ReliableKind::PropActRequest: {

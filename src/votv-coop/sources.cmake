@@ -86,6 +86,7 @@ set(VOTVCOOP_SOURCES
     src/coop/dispatch/event_dispatch_requester_feedback.cpp
     src/coop/dispatch/event_dispatch_cheat.cpp
     src/coop/dispatch/event_dispatch_atv_part.cpp
+    src/coop/dispatch/event_dispatch_atv_seat.cpp
     src/coop/dispatch/event_dispatch_kerfur_command.cpp
     src/coop/dispatch/event_dispatch_signal.cpp
     src/coop/dispatch/event_dispatch_state.cpp
@@ -181,6 +182,7 @@ set(VOTVCOOP_SOURCES
     src/coop/world/obelisk_copy.cpp
     src/coop/world/ufo_shield_sync.cpp
     src/coop/creatures/boar_sync.cpp
+    src/coop/creatures/centipede_pups.cpp
     src/coop/props/fireext_thrust_sync.cpp
     src/coop/world/trash_fling_sync.cpp
     src/coop/world/event_cue_sync.cpp
@@ -258,6 +260,8 @@ set(VOTVCOOP_SOURCES
     src/coop/creatures/owner_entity_sync.cpp
     src/coop/world/world_actor_sync.cpp
     src/coop/world/world_actor_mirror.cpp
+    src/coop/world/world_actor_rejoin.cpp
+    src/coop/world/signal_spawn_copy.cpp
     src/coop/props/prop_echo_suppress.cpp
     src/coop/props/pile_look.cpp
     src/coop/props/pile_spawn_bind.cpp
@@ -271,6 +275,15 @@ set(VOTVCOOP_SOURCES
     src/coop/props/prop_destroy_seam.cpp
     src/coop/props/prop_lifecycle.cpp
     src/coop/props/prop_food_state.cpp
+    src/coop/world/easter_hunt.cpp
+    src/coop/world/evil_ending.cpp
+    src/coop/world/level_fixture_sync.cpp
+    src/coop/world/vending_sync.cpp
+    src/coop/world/door_jam_sync.cpp
+    src/coop/world/erie_sync.cpp
+    src/coop/world/basalt_pillar.cpp
+    src/coop/world/solto_sync.cpp
+    src/coop/world/event_world_sync.cpp
     src/coop/world/vent_crawler_sync.cpp
     src/coop/props/prop_food_sync.cpp
     src/coop/props/starter_suitcase.cpp

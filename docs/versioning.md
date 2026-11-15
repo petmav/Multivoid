@@ -41,6 +41,12 @@ and battery, [vehicles.md](vehicles.md)), and the `OvenProgressState` kind (the 
 Build 289 raised the player cap to eight and widened the per-player acknowledgement arrays of the power panel, power grid
 and fuse tower messages, so a peer on 288 cannot join one on 289.
 
+Build 290 gave existing kinds new meanings, with no kind added and no size changed: `AmbientFixtureState` families 3, 4, 5, 8,
+9 and 10 (level fixtures, a basalt pillar's growth, the Easter bunny, a vending machine's stock, a door's jam, the Erie
+plush's flags), `PropIgniteIntent` verbs 2 to 6 and 10 to 12 (a dig, footprints, the bunny's talk ends and egg, a vending buy
+and coin, a hit on the plush) and `EventCue` ids 160, 161, 162 and 170 ([events-and-weather.md](events-and-weather.md), [easter-hunt.md](easter-hunt.md),
+[erie.md](erie.md), [vending.md](vending.md)). A peer on 289 would drop each as malformed, so it cannot join one on 290.
+
 From build 289 a joiner whose build differs from the host's can take the host's over the connection
 ([build-sharing.md](build-sharing.md)); the exchange's own frames do not change with the build number.
 
