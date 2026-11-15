@@ -8,7 +8,7 @@
 // back through the battery prop's playerUsedOn. Each peer says its copy's tyre mask, whether a
 // battery is fitted and its count of the part's world props whenever they change; the client judges
 // every step against both, the host judges its own counters when the client says it is done. Every
-// verdict is one line, `[ATV-PART-DRILL] [H|C] PASS` or `FAIL`. Run with join_at_host=1, so the client
+// verdict is one line, `[ATV-PART-DRILL]` with the peer's tag and `PASS` or `FAIL`. Run with join_at_host=1, so the client
 // stands within the host's reach of the ATV.
 
 #pragma once

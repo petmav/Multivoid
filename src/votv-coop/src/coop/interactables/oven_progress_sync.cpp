@@ -164,7 +164,6 @@ void OnProgress(const coop::net::OvenProgressStatePayload& p, uint8_t senderSlot
         return;
     }
     g_parked.push_back(Parked{key, mask});
-    g_nextScan = std::min(g_nextScan, Clock::now() + kScanEvery);  // a parked mask is looked for soon
     g_nextScan = {};  // look for the oven on the next pass
     UE_LOGI("oven_progress: key='%ls' mask 0x%02X parked (no such oven here yet)", key.c_str(), mask);
 }
