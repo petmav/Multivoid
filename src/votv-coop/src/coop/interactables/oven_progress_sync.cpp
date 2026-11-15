@@ -10,6 +10,7 @@
 #include "ue_wrap/core/log.h"
 #include "ue_wrap/devices/oven_screen.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cstddef>
@@ -42,7 +43,10 @@ std::vector<Parked> g_parked;
 constexpr size_t kMaxParked = 8;
 
 constexpr auto kPollEvery = std::chrono::milliseconds(250);
+// The scan walks the object array, a few milliseconds of one frame: every 3 s while no oven is known (a world
+// still loading), once a minute after, and at once when a known oven dies (a new world).
 constexpr auto kScanEvery = std::chrono::seconds(3);
+constexpr auto kRescanEvery = std::chrono::seconds(60);
 Clock::time_point g_nextPoll{};
 Clock::time_point g_nextScan{};
 uint64_t g_raised = 0;
@@ -122,13 +126,17 @@ void Tick() {
     if (now < g_nextPoll) return;
     g_nextPoll = now + kPollEvery;
     if (now >= g_nextScan) {
-        g_nextScan = now + kScanEvery;
         Scan();
+        g_nextScan = now + ((g_ovens.empty() || !g_parked.empty()) ? kScanEvery : kRescanEvery);
     }
     for (auto& o : g_ovens) {
         void* oven = o.ref.Get();
         uint8_t live = 0;
-        if (!oven || !OS::TryReadProgress(oven, live)) continue;
+        if (!oven) {
+            g_nextScan = now;  // its world is gone: the next poll scans the new one
+            continue;
+        }
+        if (!OS::TryReadProgress(oven, live)) continue;
         if ((live & ~o.known) == 0) continue;
         const uint8_t before = o.known;
         o.known = static_cast<uint8_t>(o.known | live);
@@ -156,6 +164,7 @@ void OnProgress(const coop::net::OvenProgressStatePayload& p, uint8_t senderSlot
         return;
     }
     g_parked.push_back(Parked{key, mask});
+    g_nextScan = std::min(g_nextScan, Clock::now() + kScanEvery);  // a parked mask is looked for soon
     g_nextScan = {};  // look for the oven on the next pass
     UE_LOGI("oven_progress: key='%ls' mask 0x%02X parked (no such oven here yet)", key.c_str(), mask);
 }
