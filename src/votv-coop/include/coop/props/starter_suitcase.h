@@ -30,10 +30,6 @@ void NoteReturning(int slot);
 // HOST: gives each noted slot its suitcase once that player stands in the world. Game thread.
 void Tick(coop::net::Session* session);
 
-// How many suitcases this host has given, and how many items they took (a drill reads them).
-uint64_t Given();
-uint64_t ItemsFiled();
-
 void OnDisconnect();
 
 }  // namespace coop::starter_suitcase

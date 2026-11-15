@@ -7,7 +7,7 @@
 // that comes out must hold the edited rows and 19 writes on the acting peer, and the watching
 // peer, which says what its copy of the marked disc holds whenever that changes, must read the
 // same. `zip`: the same with a zip drive. `nofix`: the host acts with the fix off, the control
-// arm, which must FAIL with the disc as it went in. One `[DISC-EJECT-DRILL] [H|C] PASS` or `FAIL`
+// arm, which must FAIL with the disc as it went in. One `[DISC-EJECT-DRILL]` with the peer's tag and `PASS` or `FAIL`
 // line from the acting peer. It leaves the edited disc in the world: run it on a throwaway save.
 
 #pragma once

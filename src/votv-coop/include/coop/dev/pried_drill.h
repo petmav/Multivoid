@@ -9,7 +9,7 @@
 // box_client -- the host drops a closed dynamite box beside its player and names it; the acting
 // peer pries it (the client with a crowbar in its hand, so the host's judge of the asked pry
 // passes), and each peer judges that its closed box is gone and one open box stands in its place.
-// Every verdict is one line, `[PRIED-DRILL] [H|C] PASS` or `FAIL`. Run the box arms with
+// Every verdict is one line, `[PRIED-DRILL]` with the peer's tag and `PASS` or `FAIL`. Run the box arms with
 // join_at_host=1, so the client stands within the host's reach of the box.
 
 #pragma once

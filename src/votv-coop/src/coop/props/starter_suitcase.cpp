@@ -42,8 +42,6 @@ constexpr float kLiftCm = 40.f;
 bool g_owed[coop::players::kMaxPeers] = {};
 uint64_t g_readySinceMs[coop::players::kMaxPeers] = {};
 uint64_t g_nextMs = 0;
-uint64_t g_given = 0;
-uint64_t g_items = 0;
 
 bool On() {
     static const bool on = coop::config::ResolveFlag(::coop::config_registry::rows::net_starter_suitcase);
@@ -107,8 +105,6 @@ bool Give(int slot) {
         if (CI::AddItemAsObject(inventory, item)) ++filed;
         else UE_LOGW("starter_suitcase: slot %d -- the suitcase did not take '%ls'; it lies beside it", slot, name);
     }
-    ++g_given;
-    g_items += static_cast<uint64_t>(filed);
     UE_LOGI("starter_suitcase: slot %d's first join -- a suitcase beside them at (%.0f,%.0f,%.0f) with %d of %zu items",
             slot, where.X, where.Y, where.Z, filed, sizeof(kStarterItems) / sizeof(kStarterItems[0]));
     return true;
@@ -146,9 +142,6 @@ void Tick(coop::net::Session* session) {
         if (Give(slot)) g_owed[slot] = false;
     }
 }
-
-uint64_t Given() { return g_given; }
-uint64_t ItemsFiled() { return g_items; }
 
 void OnDisconnect() {
     for (bool& owed : g_owed) owed = false;

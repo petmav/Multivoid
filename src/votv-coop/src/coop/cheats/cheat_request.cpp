@@ -6,7 +6,6 @@
 #include "coop/comms/chat_feed.h"
 #include "coop/config/config.h"
 #include "coop/config/config_registry.h"
-#include "coop/dev/dev_gate.h"
 #include "coop/net/intent_bucket.h"
 #include "coop/net/net_clock.h"
 #include "coop/net/session.h"
@@ -198,8 +197,6 @@ bool PrintableAscii(const char* s, size_t n) {
 void Install(coop::net::Session* session) { g_session.store(session, std::memory_order_release); }
 
 bool PlayersMayCheat() { return coop::config::ResolveFlag(coop::config_registry::rows::net_allow_player_cheats); }
-
-bool MayUse() { return coop::dev_gate::Allowed() || PlayersMayCheat(); }
 
 void SpawnItem(const std::string& name, int count, int target) {
     Request r;

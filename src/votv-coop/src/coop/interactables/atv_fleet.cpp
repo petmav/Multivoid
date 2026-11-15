@@ -32,7 +32,6 @@ constexpr float kLiftCm = 80.f;
 constexpr float kRoomCm = 170.f;      // half the room a parked ATV is given
 
 uint64_t g_nextMs = 0;
-uint64_t g_spawned = 0;
 bool     g_settled = false;   // this session's world has its two ATVs, or a spawn was tried
 
 int Threshold() {
@@ -107,12 +106,9 @@ void Tick(coop::net::Session* session) {
     }
     void* spawned = E::SpawnActor(cls, spot);
     g_settled = true;  // a spawn that fails in a ready world is not retried
-    if (spawned) ++g_spawned;
     UE_LOGI("atv_fleet: %d players and one ATV -- a second %s at (%.0f,%.0f,%.0f), beside the first", players,
             spawned ? "spawned" : "did NOT spawn", spot.X, spot.Y, spot.Z);
 }
-
-uint64_t Spawned() { return g_spawned; }
 
 void OnDisconnect() {
     g_nextMs = 0;

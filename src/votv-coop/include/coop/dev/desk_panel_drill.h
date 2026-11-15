@@ -9,7 +9,7 @@
 // change, and after every step the acting peer waits for both peers to hold the state the step
 // leaves. race -- the host unbolts, then both peers press on one instant counted from the go line,
 // and each judges that the panel is off and one panel prop is left on both. Every verdict is one
-// line, `[DESK-PANEL-DRILL] [H|C] PASS` or `FAIL`.
+// line, `[DESK-PANEL-DRILL]` with the peer's tag and `PASS` or `FAIL`.
 
 #pragma once
 

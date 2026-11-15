@@ -20,9 +20,6 @@ namespace coop::atv_fleet {
 // HOST: the check, once every few seconds. Game thread.
 void Tick(coop::net::Session* session);
 
-// How many ATVs this host has spawned for a large session (a drill reads it).
-uint64_t Spawned();
-
 void OnDisconnect();
 
 }  // namespace coop::atv_fleet
