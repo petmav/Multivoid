@@ -22,6 +22,9 @@ Build 286 added the `CheatRequest` and `CheatResult` kinds (a player's cheat req
 [players.md](players.md)), so it is the first build whose F1 menu offers a host's players the cheat tools; a peer on 285 cannot
 join one on 286.
 
+Build 289 raised the player cap to eight and widened the per-player acknowledgement arrays of the power panel, power grid
+and fuse tower messages, so a peer on 288 cannot join one on 289.
+
 An unofficial build -- any `main.dll` without its release signature -- shows `(unofficial build)`
 after the version. A host refuses a player on a build of the other kind -- an unofficial build on an
 official host (MV-H30), the official build on a modified host (MV-H31) -- unless it allows other
